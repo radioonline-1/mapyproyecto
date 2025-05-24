@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Botones Arcade</title>
+  <style>
+    body {
+      font-family: 'Arial Black', Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      margin: 20px;
+      text-align: center;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px; /* Menor separación entre botones */
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .button-arcade {
+      width: 130px;
+      height: 130px;
+      background: radial-gradient(circle at 30% 30%, #ff3366, #990000);
+      border: 4px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #ff0033aa, inset 0 0 8px #fff;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 10px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .button-arcade:active {
+      transform: scale(0.92);
+      box-shadow: inset 0 0 12px #ff0033, 0 0 10px #ff0033;
+    }
+    @media (max-width: 500px) {
+      .button-arcade {
+        width: 100px;
+        height: 100px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Memes Audio</h1>
+
+<div class="container" id="buttons-container">
+  <!-- Botones generados desde JS -->
+</div>
+
+<script>
+  const botones = [
+    { titulo: "Polizia", sonido: "audio1.mp3" },
+    { titulo: "crocodilo", sonido: "audio2.mp3" },
+    { titulo: "1,000,000", sonido: "audio3.mp3" },
+    { titulo: "fartmeme", sonido: "audio4.mp3" },
+    { titulo: "gogogogo", sonido: "audio5.mp3" },
+    { titulo: "plankton", sonido: "audio6.mp3" },
+    { titulo: "rat-dance", sonido: "audio7.mp3" },
+    { titulo: "sad", sonido: "audio8.mp3" },
+    { titulo: "sounpad", sonido: "audio9.mp3" },
+    { titulo: "technologia", sonido: "audio10.mp3" },
+    { titulo: "tralarero", sonido: "audio11.mp3" },
+    { titulo: "tu-nepe", sonido: "audio12.mp3" }
+  ];
+
+  const container = document.getElementById('buttons-container');
+  let currentAudio = null;
+
+  botones.forEach(({ titulo, sonido }) => {
+    const btn = document.createElement('button');
+    btn.className = 'button-arcade';
+    btn.textContent = titulo;
+
+    const audio = new Audio(`audios/${sonido}`);
+
+    btn.addEventListener('click', () => {
+      if (currentAudio && !currentAudio.paused) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+      currentAudio = audio;
+      audio.play();
+    });
+
+    container.appendChild(btn);
+  });
+</script>
+
+</body>
+</html>
