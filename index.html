@@ -1,102 +1,390 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Botones Arcade</title>
-  <style>
-    body {
-      font-family: 'Arial Black', Arial, sans-serif;
-      background: #111;
-      color: #eee;
-      margin: 20px;
-      text-align: center;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px; /* Menor separación entre botones */
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .button-arcade {
-      width: 130px;
-      height: 130px;
-      background: radial-gradient(circle at 30% 30%, #ff3366, #990000);
-      border: 4px solid #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 20px #ff0033aa, inset 0 0 8px #fff;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1rem;
-      padding: 10px;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .button-arcade:active {
-      transform: scale(0.92);
-      box-shadow: inset 0 0 12px #ff0033, 0 0 10px #ff0033;
-    }
-    @media (max-width: 500px) {
-      .button-arcade {
-        width: 100px;
-        height: 100px;
-        font-size: 0.85rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botón Arcade Moderno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        @keyframes neonGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 20px #00ffff,
+                    0 0 40px #00ffff,
+                    0 0 60px #00ffff,
+                    inset 0 0 20px rgba(0, 255, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 30px #ff00ff,
+                    0 0 60px #ff00ff,
+                    0 0 90px #ff00ff,
+                    inset 0 0 30px rgba(255, 0, 255, 0.2);
+            }
+        }
+        
+        @keyframes hologramShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        @keyframes buttonActivate {
+            0% { transform: scale(1) rotateX(0deg); }
+            25% { transform: scale(0.95) rotateX(5deg); }
+            50% { transform: scale(1.05) rotateX(-2deg); }
+            100% { transform: scale(1) rotateX(0deg); }
+        }
+        
+        @keyframes energyPulse {
+            0% { 
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes dataStream {
+            0% { transform: translateY(100%) scaleY(0); }
+            50% { transform: translateY(0%) scaleY(1); }
+            100% { transform: translateY(-100%) scaleY(0); }
+        }
+        
+        .modern-arcade-button {
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 255, 0.1) 0%,
+                rgba(255, 0, 255, 0.1) 50%,
+                rgba(0, 255, 255, 0.1) 100%);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .modern-arcade-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
+            border-radius: inherit;
+            z-index: -1;
+            animation: neonGlow 3s infinite;
+        }
+        
+        .modern-arcade-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            animation: hologramShimmer 2s infinite;
+        }
+        
+        .button-activated {
+            animation: buttonActivate 0.4s ease-out;
+        }
+        
+        .energy-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: energyPulse 0.6s ease-out forwards;
+        }
+        
+        .data-stream {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, 
+                transparent, 
+                #00ffff, 
+                #ff00ff, 
+                transparent);
+            animation: dataStream 0.8s ease-out forwards;
+        }
+        
+        .hologram-text {
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff;
+            animation: textGlow 2s infinite alternate;
+        }
+        
+        @keyframes textGlow {
+            0% { 
+                text-shadow: 
+                    0 0 10px #00ffff,
+                    0 0 20px #00ffff,
+                    0 0 30px #00ffff;
+            }
+            100% { 
+                text-shadow: 
+                    0 0 15px #ff00ff,
+                    0 0 25px #ff00ff,
+                    0 0 35px #ff00ff;
+            }
+        }
+        
+        .screen-distortion {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, 0.03) 2px,
+                    rgba(0, 255, 255, 0.03) 4px
+                );
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+        }
+        
+        .distortion-active {
+            animation: screenDistort 0.5s ease-out;
+        }
+        
+        @keyframes screenDistort {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        .score-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffff;
+            backdrop-filter: blur(5px);
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center p-8 relative overflow-hidden">
+    <!-- Efectos de fondo -->
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="screen-distortion" id="screenDistortion"></div>
+    
+    <!-- Audio element -->
+    <audio id="arcadeAudio" preload="auto">
+        <source src="https://www.myinstants.com/media/sounds/tortuga.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div class="text-center relative z-10 px-4">
+        <h1 class="text-3xl sm:text-5xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mb-6 sm:mb-8 lg:mb-12 hologram-text">
+            ⚡ MAPY PROYECTO ⚡
+        </h1>
+        
+        <div class="relative mb-6 sm:mb-8 flex justify-center">
+            <button 
+                id="modernArcadeButton"
+                class="modern-arcade-button w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-2xl sm:rounded-3xl text-white text-lg sm:text-xl lg:text-2xl font-bold relative z-10 transition-all duration-300 hover:scale-105 touch-manipulation"
+                onclick="activateModernEffect()"
+            >
+                <div class="flex flex-col items-center justify-center h-full relative z-20">
+                    <div class="text-5xl sm:text-6xl lg:text-8xl mb-2 sm:mb-3 lg:mb-4 hologram-text">🎯</div>
+                    <div class="hologram-text font-black tracking-wider">PRESIONAR</div>
+                    <div class="text-xs sm:text-sm mt-1 sm:mt-2 opacity-70 hologram-text">UN MUNDO NUEVO</div>
+                </div>
+            </button>
+            
+            <!-- Contenedor de efectos -->
+            <div class="absolute inset-0 pointer-events-none" id="effectsContainer"></div>
+        </div>
+        
+        <div class="score-display inline-block px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl mx-4">
+            <div class="text-cyan-400 text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 hologram-text">
+                ENERGIA: <span id="energyScore">0</span>
+            </div>
+            <div class="text-purple-400 text-sm sm:text-base lg:text-lg">
+                ESTADO: <span id="systemStatus" class="text-green-400">READY</span>
+            </div>
+        </div>
+        
+        <div class="mt-4 sm:mt-6 text-cyan-300 text-sm sm:text-base lg:text-lg opacity-80 px-4">
+            
+        </div>
+    </div>
 
-<h1>Memes Audio</h1>
-
-<div class="container" id="buttons-container">
-  <!-- Botones generados desde JS -->
-</div>
-
-<script>
-  const botones = [
-    { titulo: "Polizia", sonido: "audio1.mp3" },
-    { titulo: "crocodilo", sonido: "audio2.mp3" },
-    { titulo: "1,000,000", sonido: "audio3.mp3" },
-    { titulo: "fartmeme", sonido: "audio4.mp3" },
-    { titulo: "gogogogo", sonido: "audio5.mp3" },
-    { titulo: "plankton", sonido: "audio6.mp3" },
-    { titulo: "rat-dance", sonido: "audio7.mp3" },
-    { titulo: "sad", sonido: "audio8.mp3" },
-    { titulo: "sounpad", sonido: "audio9.mp3" },
-    { titulo: "technologia", sonido: "audio10.mp3" },
-    { titulo: "tralarero", sonido: "audio11.mp3" },
-    { titulo: "tu-nepe", sonido: "audio12.mp3" }
-  ];
-
-  const container = document.getElementById('buttons-container');
-  let currentAudio = null;
-
-  botones.forEach(({ titulo, sonido }) => {
-    const btn = document.createElement('button');
-    btn.className = 'button-arcade';
-    btn.textContent = titulo;
-
-    const audio = new Audio(`audios/${sonido}`);
-
-    btn.addEventListener('click', () => {
-      if (currentAudio && !currentAudio.paused) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
-      currentAudio = audio;
-      audio.play();
-    });
-
-    container.appendChild(btn);
-  });
-</script>
-
-</body>
+    <script>
+        let energyLevel = 0;
+        
+        function activateModernEffect() {
+            const button = document.getElementById('modernArcadeButton');
+            const screenDistortion = document.getElementById('screenDistortion');
+            const energyScore = document.getElementById('energyScore');
+            const systemStatus = document.getElementById('systemStatus');
+            const effectsContainer = document.getElementById('effectsContainer');
+            
+            // ========== REPRODUCIR AUDIO ==========
+            const audio = document.getElementById('arcadeAudio');
+            audio.currentTime = 0; // Reiniciar desde el inicio
+            audio.play().catch(e => console.log('Audio no disponible'));
+            // ======================================
+            
+            // Incrementar energía
+            energyLevel += 250;
+            energyScore.textContent = energyLevel;
+            
+            // Cambiar estado del sistema
+            systemStatus.textContent = 'CHARGING...';
+            systemStatus.className = 'text-yellow-400';
+            
+            setTimeout(() => {
+                systemStatus.textContent = 'ACTIVE';
+                systemStatus.className = 'text-green-400';
+            }, 1000);
+            
+            // Activar botón
+            button.classList.add('button-activated');
+            setTimeout(() => {
+                button.classList.remove('button-activated');
+            }, 400);
+            
+            // Distorsión de pantalla
+            screenDistortion.classList.add('distortion-active');
+            setTimeout(() => {
+                screenDistortion.classList.remove('distortion-active');
+            }, 500);
+            
+            // Crear anillos de energía
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    createEnergyRing(effectsContainer);
+                }, i * 100);
+            }
+            
+            // Crear flujos de datos
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    createDataStream(effectsContainer);
+                }, i * 80);
+            }
+            
+            // Efecto de vibración cuántica
+            let quantumShake = 0;
+            const shakeInterval = setInterval(() => {
+                const intensity = Math.sin(quantumShake * 0.5) * 3;
+                button.style.transform = `translateX(${Math.random() * intensity - intensity/2}px) translateY(${Math.random() * intensity - intensity/2}px) scale(${1 + Math.sin(quantumShake * 0.3) * 0.02})`;
+                quantumShake++;
+                if (quantumShake > 30) {
+                    clearInterval(shakeInterval);
+                    button.style.transform = '';
+                }
+            }, 16);
+        }
+        
+        function createEnergyRing(container) {
+            const ring = document.createElement('div');
+            ring.className = 'energy-ring';
+            
+            // Color aleatorio del anillo
+            const colors = ['#00ffff', '#ff00ff', '#ffff00', '#00ff00'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            ring.style.borderColor = color;
+            ring.style.boxShadow = `0 0 20px ${color}`;
+            
+            container.appendChild(ring);
+            
+            setTimeout(() => {
+                if (ring.parentNode) {
+                    ring.parentNode.removeChild(ring);
+                }
+            }, 600);
+        }
+        
+        function createDataStream(container) {
+            const stream = document.createElement('div');
+            stream.className = 'data-stream';
+            
+            // Posición aleatoria adaptada al tamaño de pantalla
+            const angle = Math.random() * 360;
+            const isMobile = window.innerWidth < 640;
+            const distance = isMobile ? 120 : 200;
+            const x = Math.cos(angle * Math.PI / 180) * distance;
+            const y = Math.sin(angle * Math.PI / 180) * distance;
+            
+            stream.style.left = `calc(50% + ${x}px)`;
+            stream.style.top = `calc(50% + ${y}px)`;
+            stream.style.transform = `rotate(${angle}deg)`;
+            
+            container.appendChild(stream);
+            
+            setTimeout(() => {
+                if (stream.parentNode) {
+                    stream.parentNode.removeChild(stream);
+                }
+            }, 800);
+        }
+        
+        // Efectos de hover y touch mejorados
+        const button = document.getElementById('modernArcadeButton');
+        
+        // Para dispositivos con mouse
+        button.addEventListener('mouseenter', function() {
+            if (!('ontouchstart' in window)) {
+                this.style.transform = 'scale(1.08) rotateX(5deg)';
+                this.style.filter = 'brightness(1.2)';
+            }
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            if (!('ontouchstart' in window)) {
+                this.style.transform = 'scale(1) rotateX(0deg)';
+                this.style.filter = 'brightness(1)';
+            }
+        });
+        
+        // Para dispositivos táctiles
+        button.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            this.style.transform = 'scale(0.95)';
+        });
+        
+        button.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            this.style.transform = 'scale(1)';
+            activateModernEffect();
+        });
+        
+        // Efecto de respiración en el fondo
+        setInterval(() => {
+            const bg1 = document.querySelector('.absolute.top-1\\/4');
+            const bg2 = document.querySelector('.absolute.bottom-1\\/4');
+            
+            bg1.style.transform = `scale(${1 + Math.sin(Date.now() * 0.001) * 0.1})`;
+            bg2.style.transform = `scale(${1 + Math.cos(Date.now() * 0.001) * 0.1})`;
+        }, 50);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9823e59385540cec',t:'MTc1ODM5ODI5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
