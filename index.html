@@ -3,389 +3,1424 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAPY PROYECTO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Saltos Run - Carreras y Eventos Deportivos</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         body {
-            font-family: 'Orbitron', monospace;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
         }
         
-        @keyframes neonGlow {
-            0%, 100% { 
-                box-shadow: 
-                    0 0 20px #00ffff,
-                    0 0 40px #00ffff,
-                    0 0 60px #00ffff,
-                    inset 0 0 20px rgba(0, 255, 255, 0.1);
-            }
-            50% { 
-                box-shadow: 
-                    0 0 30px #ff00ff,
-                    0 0 60px #ff00ff,
-                    0 0 90px #ff00ff,
-                    inset 0 0 30px rgba(255, 0, 255, 0.2);
-            }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
         }
         
-        @keyframes hologramShimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        /* Header Styles */
+        header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
         
-        @keyframes buttonActivate {
-            0% { transform: scale(1) rotateX(0deg); }
-            25% { transform: scale(0.95) rotateX(5deg); }
-            50% { transform: scale(1.05) rotateX(-2deg); }
-            100% { transform: scale(1) rotateX(0deg); }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
         }
         
-        @keyframes energyPulse {
-            0% { 
-                transform: scale(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% { 
-                transform: scale(3) rotate(360deg);
-                opacity: 0;
-            }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        @keyframes dataStream {
-            0% { transform: translateY(100%) scaleY(0); }
-            50% { transform: translateY(0%) scaleY(1); }
-            100% { transform: translateY(-100%) scaleY(0); }
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
         }
         
-        .modern-arcade-button {
-            background: linear-gradient(135deg, 
-                rgba(0, 255, 255, 0.1) 0%,
-                rgba(255, 0, 255, 0.1) 50%,
-                rgba(0, 255, 255, 0.1) 100%);
-            border: 2px solid transparent;
-            background-clip: padding-box;
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        .nav a:hover {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px 0;
+            text-align: center;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            transform-style: preserve-3d;
-            perspective: 1000px;
         }
         
-        .modern-arcade-button::before {
+        .hero::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
-            border-radius: inherit;
-            z-index: -1;
-            animation: neonGlow 3s infinite;
-        }
-        
-        .modern-arcade-button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.4), 
-                transparent);
-            animation: hologramShimmer 2s infinite;
-        }
-        
-        .button-activated {
-            animation: buttonActivate 0.4s ease-out;
-        }
-        
-        .energy-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #00ffff;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: energyPulse 0.6s ease-out forwards;
-        }
-        
-        .data-stream {
-            position: absolute;
-            width: 2px;
-            height: 100px;
-            background: linear-gradient(to bottom, 
-                transparent, 
-                #00ffff, 
-                #ff00ff, 
-                transparent);
-            animation: dataStream 0.8s ease-out forwards;
-        }
-        
-        .hologram-text {
-            text-shadow: 
-                0 0 10px #00ffff,
-                0 0 20px #00ffff,
-                0 0 30px #00ffff;
-            animation: textGlow 2s infinite alternate;
-        }
-        
-        @keyframes textGlow {
-            0% { 
-                text-shadow: 
-                    0 0 10px #00ffff,
-                    0 0 20px #00ffff,
-                    0 0 30px #00ffff;
-            }
-            100% { 
-                text-shadow: 
-                    0 0 15px #ff00ff,
-                    0 0 25px #ff00ff,
-                    0 0 35px #ff00ff;
-            }
-        }
-        
-        .screen-distortion {
-            position: fixed;
             top: 0;
             left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 48px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        /* Event Info Card */
+        .event-info {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto 48px auto;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.2);
+        }
+        
+        .event-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .event-detail {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        
+        .event-detail-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        
+        .event-detail-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .event-detail-text {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 18px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(245, 158, 11, 0.6);
+        }
+        
+        .cta-button.secondary {
+            background: transparent;
+            border: 2px solid #f59e0b;
+            color: #f59e0b;
+        }
+        
+        .cta-button.secondary:hover {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        /* Sections */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-alt {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px);
+        }
+        
+        .section-title {
+            font-size: 40px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, #ffffff, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Antecedentes Section */
+        .antecedentes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+        
+        .antecedente-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .antecedente-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.3);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+        
+        .antecedente-image {
             width: 100%;
-            height: 100%;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(0, 255, 255, 0.03) 2px,
-                    rgba(0, 255, 255, 0.03) 4px
-                );
-            pointer-events: none;
-            z-index: 1000;
-            opacity: 0;
+            height: 250px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+            overflow: hidden;
         }
         
-        .distortion-active {
-            animation: screenDistort 0.5s ease-out;
+        .antecedente-content {
+            padding: 32px;
         }
         
-        @keyframes screenDistort {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
+        .antecedente-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #f59e0b;
         }
         
-        .score-display {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #00ffff;
-            backdrop-filter: blur(5px);
+        .antecedente-description {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .antecedente-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Sponsors Section */
+        .sponsors-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .sponsors-category {
+            margin-bottom: 40px;
+        }
+        
+        .sponsors-category-title {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 24px;
+            color: #f59e0b;
+        }
+        
+        .sponsors-slider {
+            overflow: hidden;
+            position: relative;
+            height: 120px;
+        }
+        
+        .sponsors-track {
+            display: flex;
+            animation: slideSponsors 20s linear infinite;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .sponsor-logo {
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #1e293b;
+            transition: all 0.3s ease;
+        }
+        
+        .sponsor-logo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+        
+        .sponsor-platino {
+            width: 200px;
+            height: 100px;
+            font-size: 18px;
+        }
+        
+        .sponsor-oro {
+            width: 160px;
+            height: 80px;
+            font-size: 16px;
+        }
+        
+        .sponsor-plata {
+            width: 120px;
+            height: 60px;
+            font-size: 14px;
+        }
+        
+        @keyframes slideSponsors {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        /* Registration Form */
+        .registration-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-card {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-label {
+            display: block;
+            color: white;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(245, 158, 11, 0.2);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+        
+        .checkbox-label {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .payment-section {
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .payment-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #f59e0b;
+        }
+        
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .payment-option {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-option:hover {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .payment-option.selected {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.2);
+        }
+        
+        /* Mission Vision */
+        .mission-vision {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+            border-radius: 20px;
+            padding: 60px 40px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .mv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .mv-card {
+            text-align: center;
+            padding: 32px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+        }
+        
+        .mv-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .mv-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #f59e0b;
+        }
+        
+        .mv-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+        
+        /* Social Links */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 40px;
+        }
+        
+        .social-link {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+        }
+        
+        .social-link:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+        }
+        
+        .admin-panel.show {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            text-align: center;
+        }
+        
+        .stat-card-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #f59e0b;
+        }
+        
+        .stat-card-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+        
+        .results-section.show {
+            display: block;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+        
+        .search-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+        }
+        
+        .results-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            overflow: hidden;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .results-table thead {
+            background: rgba(245, 158, 11, 0.2);
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+        }
+        
+        .results-table th {
+            color: #f59e0b;
+            font-weight: 700;
+        }
+        
+        .results-table tbody tr:hover {
+            background: rgba(245, 158, 11, 0.05);
+        }
+        
+        /* Navigation States */
+        .page-section {
+            display: none;
+        }
+        
+        .page-section.active {
+            display: block;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            padding: 40px 0;
+            border-top: 1px solid rgba(245, 158, 11, 0.2);
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .footer-text {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .container {
+                padding: 0 16px;
+            }
+            
+            .event-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center p-8 relative overflow-hidden">
-    <!-- Efectos de fondo -->
-    <div class="absolute inset-0 opacity-20">
-        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
-    </div>
-    
-    <div class="screen-distortion" id="screenDistortion"></div>
-    
-    <!-- Audio element -->
-    <audio id="arcadeAudio" preload="auto">
-        <source src="https://www.myinstants.com/media/sounds/tortuga.mp3" type="audio/mpeg">
-    </audio>
-    
-    <div class="text-center relative z-10 px-4">
-        <h1 class="text-3xl sm:text-5xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mb-6 sm:mb-8 lg:mb-12 hologram-text">
-            ⚡ MAPY PROYECTO ⚡
-        </h1>
-        
-        <div class="relative mb-6 sm:mb-8 flex justify-center">
-            <button 
-                id="modernArcadeButton"
-                class="modern-arcade-button w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-2xl sm:rounded-3xl text-white text-lg sm:text-xl lg:text-2xl font-bold relative z-10 transition-all duration-300 hover:scale-105 touch-manipulation"
-                onclick="activateModernEffect()"
-            >
-                <div class="flex flex-col items-center justify-center h-full relative z-20">
-                    <div class="text-5xl sm:text-6xl lg:text-8xl mb-2 sm:mb-3 lg:mb-4 hologram-text">🎯</div>
-                    <div class="hologram-text font-black tracking-wider">PRESIONAR</div>
-                    <div class="text-xs sm:text-sm mt-1 sm:mt-2 opacity-70 hologram-text">UN MUNDO NUEVO</div>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🏃</div>
+                    <h1 class="logo-text">Saltos Run</h1>
                 </div>
-            </button>
-            
-            <!-- Contenedor de efectos -->
-            <div class="absolute inset-0 pointer-events-none" id="effectsContainer"></div>
-        </div>
-        
-        <div class="score-display inline-block px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl mx-4">
-            <div class="text-cyan-400 text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 hologram-text">
-                ENERGIA: <span id="energyScore">0</span>
-            </div>
-            <div class="text-purple-400 text-sm sm:text-base lg:text-lg">
-                ESTADO: <span id="systemStatus" class="text-green-400">READY</span>
+                <nav class="nav">
+                    <a href="#" onclick="showSection('home')">Inicio</a>
+                    <a href="#" onclick="showSection('inscripciones')">Inscripciones</a>
+                    <a href="#" onclick="showSection('resultados')">Resultados</a>
+                    <a href="#" onclick="showSection('admin')">Admin</a>
+                </nav>
             </div>
         </div>
-        
-        <div class="mt-4 sm:mt-6 text-cyan-300 text-sm sm:text-base lg:text-lg opacity-80 px-4">
-            
-        </div>
+    </header>
+
+    <!-- Página Principal -->
+    <div id="home" class="page-section active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Saltos Run 3</h1>
+                    <div class="hero-subtitle">El evento deportivo más esperado del año</div>
+                    <p>Únete a la tercera edición de Saltos Run, donde corredores de toda la región se reúnen para vivir una experiencia única de superación personal y compañerismo deportivo.</p>
+                    
+                    <div class="event-info">
+                        <h2 class="event-title">🏆 Saltos Run 3 - 2024</h2>
+                        <div class="event-details">
+                            <div class="event-detail">
+                                <div class="event-detail-icon">📅</div>
+                                <div class="event-detail-title">Fecha</div>
+                                <div class="event-detail-text">15 de Abril, 2024</div>
+                            </div>
+                            <div class="event-detail">
+                                <div class="event-detail-icon">📍</div>
+                                <div class="event-detail-title">Lugar</div>
+                                <div class="event-detail-text">Saltos, Uruguay</div>
+                            </div>
+                            <div class="event-detail">
+                                <div class="event-detail-icon">🏃‍♂️</div>
+                                <div class="event-detail-title">Distancias</div>
+                                <div class="event-detail-text">5K, 10K, 21K</div>
+                            </div>
+                            <div class="event-detail">
+                                <div class="event-detail-icon">⏰</div>
+                                <div class="event-detail-title">Largada</div>
+                                <div class="event-detail-text">08:00 hs</div>
+                            </div>
+                        </div>
+                        
+                        <div class="cta-buttons">
+                            <button class="cta-button" onclick="showSection('inscripciones')">
+                                Inscribirse Ahora
+                            </button>
+                            <a href="#antecedentes" class="cta-button secondary">
+                                Ver Ediciones Anteriores
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Antecedentes Section -->
+        <section id="antecedentes" class="section section-alt">
+            <div class="container">
+                <h3 class="section-title">Nuestros Antecedentes</h3>
+                <div class="antecedentes-grid">
+                    <div class="antecedente-card">
+                        <div class="antecedente-image">
+                            🏃‍♀️
+                            <!-- Aquí puedes agregar imágenes reales de Saltos Run 1 -->
+                        </div>
+                        <div class="antecedente-content">
+                            <h4 class="antecedente-title">Saltos Run 1 - 2022</h4>
+                            <p class="antecedente-description">
+                                La primera edición marcó el inicio de una tradición deportiva en Saltos. Con gran participación local y regional, establecimos las bases de lo que se convertiría en el evento deportivo más importante de la ciudad.
+                            </p>
+                            <div class="antecedente-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">350</div>
+                                    <div class="stat-label">Participantes</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">3</div>
+                                    <div class="stat-label">Distancias</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">15</div>
+                                    <div class="stat-label">Ciudades</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">98%</div>
+                                    <div class="stat-label">Satisfacción</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="antecedente-card">
+                        <div class="antecedente-image">
+                            🏆
+                            <!-- Aquí puedes agregar imágenes reales de Saltos Run 2 -->
+                        </div>
+                        <div class="antecedente-content">
+                            <h4 class="antecedente-title">Saltos Run 2 - 2023</h4>
+                            <p class="antecedente-description">
+                                La segunda edición superó todas las expectativas. Con mejoras en la organización, nuevos recorridos y mayor participación internacional, consolidamos a Saltos Run como referente regional.
+                            </p>
+                            <div class="antecedente-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">580</div>
+                                    <div class="stat-label">Participantes</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">4</div>
+                                    <div class="stat-label">Países</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">25</div>
+                                    <div class="stat-label">Ciudades</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">100%</div>
+                                    <div class="stat-label">Satisfacción</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sponsors Section -->
+        <section class="section">
+            <div class="container">
+                <h3 class="section-title">Nuestros Patrocinadores</h3>
+                <div class="sponsors-container">
+                    <div class="sponsors-category">
+                        <h4 class="sponsors-category-title">🥇 Patrocinadores Platino</h4>
+                        <div class="sponsors-slider">
+                            <div class="sponsors-track">
+                                <div class="sponsor-logo sponsor-platino">SPONSOR PLATINO 1</div>
+                                <div class="sponsor-logo sponsor-platino">SPONSOR PLATINO 2</div>
+                                <div class="sponsor-logo sponsor-platino">SPONSOR PLATINO 3</div>
+                                <div class="sponsor-logo sponsor-platino">SPONSOR PLATINO 1</div>
+                                <div class="sponsor-logo sponsor-platino">SPONSOR PLATINO 2</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sponsors-category">
+                        <h4 class="sponsors-category-title">🥈 Patrocinadores Oro</h4>
+                        <div class="sponsors-slider">
+                            <div class="sponsors-track">
+                                <div class="sponsor-logo sponsor-oro">SPONSOR ORO 1</div>
+                                <div class="sponsor-logo sponsor-oro">SPONSOR ORO 2</div>
+                                <div class="sponsor-logo sponsor-oro">SPONSOR ORO 3</div>
+                                <div class="sponsor-logo sponsor-oro">SPONSOR ORO 4</div>
+                                <div class="sponsor-logo sponsor-oro">SPONSOR ORO 1</div>
+                                <div class="sponsor-logo sponsor-oro">SPONSOR ORO 2</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sponsors-category">
+                        <h4 class="sponsors-category-title">🥉 Patrocinadores Plata</h4>
+                        <div class="sponsors-slider">
+                            <div class="sponsors-track">
+                                <div class="sponsor-logo sponsor-plata">PLATA 1</div>
+                                <div class="sponsor-logo sponsor-plata">PLATA 2</div>
+                                <div class="sponsor-logo sponsor-plata">PLATA 3</div>
+                                <div class="sponsor-logo sponsor-plata">PLATA 4</div>
+                                <div class="sponsor-logo sponsor-plata">PLATA 5</div>
+                                <div class="sponsor-logo sponsor-plata">PLATA 1</div>
+                                <div class="sponsor-logo sponsor-plata">PLATA 2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Vision Section -->
+        <section class="section section-alt">
+            <div class="container">
+                <div class="mission-vision">
+                    <div class="mv-grid">
+                        <div class="mv-card">
+                            <div class="mv-icon">🎯</div>
+                            <h4 class="mv-title">Nuestra Misión</h4>
+                            <p class="mv-text">
+                                Promover el deporte y la vida saludable en nuestra comunidad, organizando eventos deportivos de calidad que fomenten la participación, la superación personal y el compañerismo entre corredores de todas las edades y niveles.
+                            </p>
+                        </div>
+                        <div class="mv-card">
+                            <div class="mv-icon">👁️</div>
+                            <h4 class="mv-title">Nuestra Visión</h4>
+                            <p class="mv-text">
+                                Ser reconocidos como el evento deportivo de referencia en la región, consolidando a Saltos como destino deportivo y contribuyendo al desarrollo del running como estilo de vida saludable y sostenible.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="Facebook">📘</a>
+                        <a href="#" class="social-link" title="Instagram">📷</a>
+                        <a href="#" class="social-link" title="Twitter">🐦</a>
+                        <a href="#" class="social-link" title="YouTube">📺</a>
+                        <a href="#" class="social-link" title="WhatsApp">💬</a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
+
+    <!-- Inscripciones Section -->
+    <div id="inscripciones" class="page-section">
+        <section class="section" style="padding-top: 120px;">
+            <div class="container">
+                <div class="registration-container">
+                    <h3 class="section-title">Inscripción Saltos Run 3</h3>
+                    
+                    <div id="successMessage" class="success-message">
+                        ¡Inscripción exitosa! Te hemos enviado un email de confirmación con todos los detalles.
+                    </div>
+                    
+                    <div class="form-card">
+                        <form id="registrationForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Nombre *</label>
+                                    <input type="text" class="form-input" name="nombre" placeholder="Tu nombre" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Apellido *</label>
+                                    <input type="text" class="form-input" name="apellido" placeholder="Tu apellido" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Cédula / CPF / RG *</label>
+                                    <input type="text" class="form-input" name="documento" placeholder="Número de documento" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Fecha de Nacimiento *</label>
+                                    <input type="date" class="form-input" name="fechaNacimiento" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Sexo *</label>
+                                    <select class="form-select" name="sexo" required>
+                                        <option value="">Seleccionar</option>
+                                        <option value="masculino">Masculino</option>
+                                        <option value="femenino">Femenino</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Talla de Remera *</label>
+                                    <select class="form-select" name="tallaRemera" required>
+                                        <option value="">Seleccionar</option>
+                                        <option value="XS">XS</option>
+                                        <option value="S">S</option>
+                                        <option value="M">M</option>
+                                        <option value="L">L</option>
+                                        <option value="XL">XL</option>
+                                        <option value="XXL">XXL</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-input" name="email" placeholder="tu@email.com" required>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Teléfono (WhatsApp) *</label>
+                                    <input type="tel" class="form-input" name="telefono" placeholder="+598 99 123 456" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Ciudad *</label>
+                                    <input type="text" class="form-input" name="ciudad" placeholder="Tu ciudad" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">País *</label>
+                                    <select class="form-select" name="pais" required>
+                                        <option value="">Seleccionar</option>
+                                        <option value="Uruguay">Uruguay</option>
+                                        <option value="Argentina">Argentina</option>
+                                        <option value="Brasil">Brasil</option>
+                                        <option value="Paraguay">Paraguay</option>
+                                        <option value="Chile">Chile</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Distancia *</label>
+                                    <select class="form-select" name="distancia" required onchange="updateRegistrationPrice()">
+                                        <option value="">Seleccionar</option>
+                                        <option value="5K" data-price="800">5K - $800 UYU</option>
+                                        <option value="10K" data-price="1200">10K - $1200 UYU</option>
+                                        <option value="21K" data-price="1800">21K - $1800 UYU</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Contacto de Emergencia *</label>
+                                    <input type="text" class="form-input" name="contactoEmergencia" placeholder="Nombre del contacto" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Teléfono de Emergencia *</label>
+                                    <input type="tel" class="form-input" name="telefonoEmergencia" placeholder="+598 99 123 456" required>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-section">
+                                <h4 class="payment-title">💳 Método de Pago</h4>
+                                <div class="payment-options">
+                                    <div class="payment-option" onclick="selectPayment('tpago')">
+                                        <div style="font-size: 24px; margin-bottom: 8px;">📱</div>
+                                        <div style="font-weight: 600;">TPago</div>
+                                        <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Pago móvil</div>
+                                    </div>
+                                    <div class="payment-option" onclick="selectPayment('pagopar')">
+                                        <div style="font-size: 24px; margin-bottom: 8px;">💳</div>
+                                        <div style="font-weight: 600;">PagoPar</div>
+                                        <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Tarjetas y más</div>
+                                    </div>
+                                </div>
+                                <div id="priceDisplay" style="text-align: center; margin-top: 16px; font-size: 20px; font-weight: 700; color: #f59e0b; display: none;">
+                                    Total: $<span id="totalPrice">0</span> UYU
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" name="aceptaReglamento" required>
+                                <label class="checkbox-label">
+                                    Acepto el reglamento de la carrera y las condiciones de participación. Entiendo los riesgos asociados con la participación en eventos deportivos. *
+                                </label>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" name="aceptaPolitica" required>
+                                <label class="checkbox-label">
+                                    Acepto la política de tratamiento de datos personales y autorizo el uso de mi imagen en material promocional del evento. *
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="cta-button" style="width: 100%; margin-top: 24px;">
+                                Completar Inscripción y Pagar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin" class="page-section">
+        <section class="section" style="padding-top: 120px;">
+            <div class="container">
+                <h3 class="section-title">Panel de Administración</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-number" id="totalInscriptos">247</div>
+                        <div class="stat-card-label">Total Inscriptos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-number" id="inscriptos5k">89</div>
+                        <div class="stat-card-label">Inscriptos 5K</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-number" id="inscriptos10k">102</div>
+                        <div class="stat-card-label">Inscriptos 10K</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-number" id="inscriptos21k">56</div>
+                        <div class="stat-card-label">Inscriptos 21K</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-number" id="masculinos">145</div>
+                        <div class="stat-card-label">Masculinos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-number" id="femeninos">102</div>
+                        <div class="stat-card-label">Femeninos</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="cta-button" onclick="exportData()">
+                        📊 Exportar Datos a Excel
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultados" class="page-section">
+        <section class="section" style="padding-top: 120px;">
+            <div class="container">
+                <h3 class="section-title">Resultados de la Carrera</h3>
+                
+                <div class="search-container">
+                    <div class="search-grid">
+                        <input type="text" class="form-input" id="searchResults" placeholder="Buscar por nombre o número de dorsal...">
+                        <button class="cta-button" onclick="searchResults()">
+                            🔍 Buscar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="results-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Pos.</th>
+                                <th>Dorsal</th>
+                                <th>Nombre</th>
+                                <th>Distancia</th>
+                                <th>Tiempo</th>
+                                <th>Ritmo</th>
+                                <th>Categoría</th>
+                                <th>Pos. Categoría</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <tr>
+                                <td style="font-weight: 700; color: #f59e0b;">1</td>
+                                <td>001</td>
+                                <td style="font-weight: 600;">Carlos Mendoza</td>
+                                <td>21K</td>
+                                <td style="font-family: monospace; font-weight: 700;">1:15:32</td>
+                                <td style="font-family: monospace;">3:35/km</td>
+                                <td>Masculino 30-39</td>
+                                <td style="color: #f59e0b;">1°</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: #f59e0b;">2</td>
+                                <td>045</td>
+                                <td style="font-weight: 600;">María González</td>
+                                <td>21K</td>
+                                <td style="font-family: monospace; font-weight: 700;">1:22:15</td>
+                                <td style="font-family: monospace;">3:54/km</td>
+                                <td>Femenino 25-29</td>
+                                <td style="color: #f59e0b;">1°</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: #f59e0b;">3</td>
+                                <td>123</td>
+                                <td style="font-weight: 600;">Roberto Silva</td>
+                                <td>21K</td>
+                                <td style="font-family: monospace; font-weight: 700;">1:28:45</td>
+                                <td style="font-family: monospace;">4:13/km</td>
+                                <td>Masculino 40-49</td>
+                                <td style="color: #f59e0b;">1°</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="text-align: center; margin-top: 32px;">
+                    <button class="cta-button secondary" onclick="loadResults()">
+                        📄 Cargar Resultados desde Excel
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-icon">🏃</div>
+                    <span class="logo-text">Saltos Run</span>
+                </div>
+                <p class="footer-text">© 2024 Saltos Run. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        let energyLevel = 0;
+        // Variables globales
+        let selectedPaymentMethod = '';
+        let registrationData = [];
         
-        function activateModernEffect() {
-            const button = document.getElementById('modernArcadeButton');
-            const screenDistortion = document.getElementById('screenDistortion');
-            const energyScore = document.getElementById('energyScore');
-            const systemStatus = document.getElementById('systemStatus');
-            const effectsContainer = document.getElementById('effectsContainer');
+        // Navegación entre secciones
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
             
-            // ========== REPRODUCIR AUDIO ==========
-            const audio = document.getElementById('arcadeAudio');
-            audio.currentTime = 0; // Reiniciar desde el inicio
-            audio.play().catch(e => console.log('Audio no disponible'));
-            // ======================================
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
             
-            // Incrementar energía
-            energyLevel += 250;
-            energyScore.textContent = energyLevel;
-            
-            // Cambiar estado del sistema
-            systemStatus.textContent = 'CHARGING...';
-            systemStatus.className = 'text-yellow-400';
-            
-            setTimeout(() => {
-                systemStatus.textContent = 'ACTIVE';
-                systemStatus.className = 'text-green-400';
-            }, 1000);
-            
-            // Activar botón
-            button.classList.add('button-activated');
-            setTimeout(() => {
-                button.classList.remove('button-activated');
-            }, 400);
-            
-            // Distorsión de pantalla
-            screenDistortion.classList.add('distortion-active');
-            setTimeout(() => {
-                screenDistortion.classList.remove('distortion-active');
-            }, 500);
-            
-            // Crear anillos de energía
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    createEnergyRing(effectsContainer);
-                }, i * 100);
-            }
-            
-            // Crear flujos de datos
-            for (let i = 0; i < 8; i++) {
-                setTimeout(() => {
-                    createDataStream(effectsContainer);
-                }, i * 80);
-            }
-            
-            // Efecto de vibración cuántica
-            let quantumShake = 0;
-            const shakeInterval = setInterval(() => {
-                const intensity = Math.sin(quantumShake * 0.5) * 3;
-                button.style.transform = `translateX(${Math.random() * intensity - intensity/2}px) translateY(${Math.random() * intensity - intensity/2}px) scale(${1 + Math.sin(quantumShake * 0.3) * 0.02})`;
-                quantumShake++;
-                if (quantumShake > 30) {
-                    clearInterval(shakeInterval);
-                    button.style.transform = '';
-                }
-            }, 16);
+            // Scroll al top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        function createEnergyRing(container) {
-            const ring = document.createElement('div');
-            ring.className = 'energy-ring';
+        // Selección de método de pago
+        function selectPayment(method) {
+            // Remover selección anterior
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
             
-            // Color aleatorio del anillo
-            const colors = ['#00ffff', '#ff00ff', '#ffff00', '#00ff00'];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            ring.style.borderColor = color;
-            ring.style.boxShadow = `0 0 20px ${color}`;
-            
-            container.appendChild(ring);
-            
-            setTimeout(() => {
-                if (ring.parentNode) {
-                    ring.parentNode.removeChild(ring);
-                }
-            }, 600);
+            // Seleccionar nuevo método
+            event.target.closest('.payment-option').classList.add('selected');
+            selectedPaymentMethod = method;
         }
         
-        function createDataStream(container) {
-            const stream = document.createElement('div');
-            stream.className = 'data-stream';
+        // Actualizar precio de inscripción
+        function updateRegistrationPrice() {
+            const select = document.querySelector('select[name="distancia"]');
+            const priceDisplay = document.getElementById('priceDisplay');
+            const totalPrice = document.getElementById('totalPrice');
             
-            // Posición aleatoria adaptada al tamaño de pantalla
-            const angle = Math.random() * 360;
-            const isMobile = window.innerWidth < 640;
-            const distance = isMobile ? 120 : 200;
-            const x = Math.cos(angle * Math.PI / 180) * distance;
-            const y = Math.sin(angle * Math.PI / 180) * distance;
-            
-            stream.style.left = `calc(50% + ${x}px)`;
-            stream.style.top = `calc(50% + ${y}px)`;
-            stream.style.transform = `rotate(${angle}deg)`;
-            
-            container.appendChild(stream);
-            
-            setTimeout(() => {
-                if (stream.parentNode) {
-                    stream.parentNode.removeChild(stream);
-                }
-            }, 800);
+            if (select.value) {
+                const price = select.options[select.selectedIndex].getAttribute('data-price');
+                totalPrice.textContent = price;
+                priceDisplay.style.display = 'block';
+            } else {
+                priceDisplay.style.display = 'none';
+            }
         }
         
-        // Efectos de hover y touch mejorados
-        const button = document.getElementById('modernArcadeButton');
-        
-        // Para dispositivos con mouse
-        button.addEventListener('mouseenter', function() {
-            if (!('ontouchstart' in window)) {
-                this.style.transform = 'scale(1.08) rotateX(5deg)';
-                this.style.filter = 'brightness(1.2)';
-            }
-        });
-        
-        button.addEventListener('mouseleave', function() {
-            if (!('ontouchstart' in window)) {
-                this.style.transform = 'scale(1) rotateX(0deg)';
-                this.style.filter = 'brightness(1)';
-            }
-        });
-        
-        // Para dispositivos táctiles
-        button.addEventListener('touchstart', function(e) {
+        // Procesar inscripción
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            this.style.transform = 'scale(0.95)';
-        });
-        
-        button.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            this.style.transform = 'scale(1)';
-            activateModernEffect();
-        });
-        
-        // Efecto de respiración en el fondo
-        setInterval(() => {
-            const bg1 = document.querySelector('.absolute.top-1\\/4');
-            const bg2 = document.querySelector('.absolute.bottom-1\\/4');
             
-            bg1.style.transform = `scale(${1 + Math.sin(Date.now() * 0.001) * 0.1})`;
-            bg2.style.transform = `scale(${1 + Math.cos(Date.now() * 0.001) * 0.1})`;
-        }, 50);
+            if (!selectedPaymentMethod) {
+                alert('Por favor selecciona un método de pago');
+                return;
+            }
+            
+            // Recopilar datos del formulario
+            const formData = new FormData(this);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            data.metodoPago = selectedPaymentMethod;
+            data.fechaInscripcion = new Date().toISOString();
+            data.numeroInscripcion = 'SR3-' + Date.now();
+            
+            // Simular guardado en Excel (en implementación real, esto iría a un servidor)
+            registrationData.push(data);
+            localStorage.setItem('saltosRunRegistrations', JSON.stringify(registrationData));
+            
+            // Simular envío de email de confirmación
+            sendConfirmationEmail(data);
+            
+            // Mostrar mensaje de éxito
+            document.getElementById('successMessage').classList.add('show');
+            
+            // Limpiar formulario
+            this.reset();
+            selectedPaymentMethod = '';
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('priceDisplay').style.display = 'none';
+            
+            // Actualizar estadísticas del admin
+            updateAdminStats();
+            
+            // Scroll al mensaje de éxito
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Simular envío de email de confirmación
+        function sendConfirmationEmail(data) {
+            console.log('Email de confirmación enviado a:', data.email);
+            console.log('Datos de inscripción:', data);
+            
+            // En implementación real, aquí se haría la llamada al servidor para enviar el email
+            alert(`¡Inscripción exitosa! Se ha enviado un email de confirmación a ${data.email}\n\nNúmero de inscripción: ${data.numeroInscripcion}`);
+        }
+        
+        // Actualizar estadísticas del panel de administración
+        function updateAdminStats() {
+            const data = JSON.parse(localStorage.getItem('saltosRunRegistrations') || '[]');
+            
+            document.getElementById('totalInscriptos').textContent = data.length;
+            document.getElementById('inscriptos5k').textContent = data.filter(r => r.distancia === '5K').length;
+            document.getElementById('inscriptos10k').textContent = data.filter(r => r.distancia === '10K').length;
+            document.getElementById('inscriptos21k').textContent = data.filter(r => r.distancia === '21K').length;
+            document.getElementById('masculinos').textContent = data.filter(r => r.sexo === 'masculino').length;
+            document.getElementById('femeninos').textContent = data.filter(r => r.sexo === 'femenino').length;
+        }
+        
+        // Exportar datos a Excel (simulado)
+        function exportData() {
+            const data = JSON.parse(localStorage.getItem('saltosRunRegistrations') || '[]');
+            
+            if (data.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            // En implementación real, aquí se generaría un archivo Excel
+            console.log('Datos para exportar:', data);
+            alert(`Exportando ${data.length} registros a Excel...\n\n(Esta es una demostración. En la implementación real se descargaría un archivo Excel)`);
+        }
+        
+        // Buscar resultados
+        function searchResults() {
+            const searchTerm = document.getElementById('searchResults').value.toLowerCase();
+            
+            if (!searchTerm) {
+                alert('Por favor ingresa un nombre o número de dorsal para buscar');
+                return;
+            }
+            
+            // Simular búsqueda (en implementación real, esto consultaría una base de datos)
+            alert(`Buscando resultados para: "${searchTerm}"\n\n(Esta es una demostración. En la implementación real se mostrarían los resultados reales)`);
+        }
+        
+        // Cargar resultados desde Excel (simulado)
+        function loadResults() {
+            alert('Función para cargar resultados desde archivo Excel\n\n(Esta funcionalidad se implementaría en el servidor para procesar archivos Excel con los resultados de la carrera)');
+        }
+        
+        // Inicializar datos al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar datos existentes del localStorage
+            const savedData = localStorage.getItem('saltosRunRegistrations');
+            if (savedData) {
+                registrationData = JSON.parse(savedData);
+                updateAdminStats();
+            }
+            
+            // Smooth scroll para enlaces internos
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9823e59385540cec',t:'MTc1ODM5ODI5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'984b47cf4597fe12',t:'MTc1ODgxMTI2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
