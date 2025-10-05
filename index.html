@@ -807,6 +807,25 @@
                         <i class="fas fa-bell mr-2"></i>Activar Notificaciones Push
                     </button>
                     <p class="text-sm text-white text-opacity-80 mt-2">Recibe notificaciones instantáneas de nuevos episodios</p>
+                    
+                    <!-- Debug Info Panel -->
+                    <div id="debug-info" class="mt-4 bg-black bg-opacity-30 rounded-lg p-4 text-xs text-white text-opacity-80 hidden">
+                        <h4 class="font-semibold mb-2">🔧 Información de Debug:</h4>
+                        <div id="debug-content">
+                            <p>• Navegador: <span id="browser-info"></span></p>
+                            <p>• Notifications API: <span id="notifications-support"></span></p>
+                            <p>• Service Worker: <span id="sw-support"></span></p>
+                            <p>• Firebase Messaging: <span id="fcm-support"></span></p>
+                            <p>• Permisos: <span id="permission-status"></span></p>
+                            <p>• Service Worker Estado: <span id="sw-status"></span></p>
+                            <p>• Token FCM: <span id="token-status">No generado</span></p>
+                        </div>
+                        <button id="toggle-debug" class="mt-2 text-blue-300 hover:text-blue-200 underline">Ocultar Debug</button>
+                    </div>
+                    
+                    <button id="show-debug" class="mt-2 text-xs text-white text-opacity-60 hover:text-opacity-80 underline">
+                        Mostrar información técnica
+                    </button>
                 </div>
             </div>
         </section>
@@ -1202,14 +1221,29 @@
         
         // Initialize Firebase Messaging
         let messaging = null;
+        let messagingSupported = false;
+        
         try {
-            messaging = firebase.messaging();
-            
-            // Add the public VAPID key generated from the Firebase console
-            // Replace 'YOUR_VAPID_KEY' with your actual VAPID key from Firebase Console > Project Settings > Cloud Messaging
-            messaging.usePublicVapidKey('BNxwGc8dTndcjz5pNp8kNpXvKoHzFQs7Q8rJ9vQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQ');
+            // Check if messaging is supported
+            if (firebase.messaging.isSupported()) {
+                messaging = firebase.messaging();
+                messagingSupported = true;
+                
+                // IMPORTANTE: Reemplaza con tu clave VAPID real de Firebase Console
+                // Ve a: Firebase Console > Configuración del Proyecto > Cloud Messaging > Configuración web
+                // Por ahora usamos una clave de ejemplo - DEBES reemplazarla
+                const VAPID_KEY = 'BIsSuQxTW7hC_n5ZB9ufzYcKdRYtjZp0VyzvXS09GpKwjF2n3IMU9CHpoO5sHpE8CX61fFOcJCDHWkkvyixVGwk';
+                
+                // Configurar la clave VAPID
+                messaging.usePublicVapidKey(VAPID_KEY);
+                
+                console.log('Firebase Messaging initialized with VAPID key');
+            } else {
+                console.log('Firebase Messaging is not supported in this browser');
+            }
         } catch (error) {
-            console.error('Firebase Messaging not supported:', error);
+            console.error('Firebase Messaging initialization error:', error);
+            messagingSupported = false;
         }
 
         // EmailJS Configuration (replace with your actual keys)
@@ -1819,36 +1853,104 @@
 
         // Push Notification Functions
         async function requestNotificationPermission() {
-            if (!messaging) {
-                showNotification('Las notificaciones push no están disponibles en este navegador', 'error');
+            console.log('🔔 Iniciando proceso de solicitud de permisos...');
+            
+            // Check if notifications are supported
+            if (!('Notification' in window)) {
+                console.error('❌ Notifications API no soportada');
+                showNotification('Las notificaciones no están soportadas en este navegador', 'error');
+                return null;
+            }
+
+            // Check if service worker is supported
+            if (!('serviceWorker' in navigator)) {
+                console.error('❌ Service Worker no soportado');
+                showNotification('Service Workers no están soportados en este navegador', 'error');
+                return null;
+            }
+
+            if (!messagingSupported || !messaging) {
+                console.error('❌ Firebase Messaging no disponible');
+                showNotification('Firebase Messaging no está disponible. Verifica la configuración.', 'error');
                 return null;
             }
 
             try {
+                console.log('📋 Solicitando permisos de notificación...');
+                
                 // Request permission
                 const permission = await Notification.requestPermission();
+                console.log('🔐 Permiso obtenido:', permission);
                 
                 if (permission === 'granted') {
-                    console.log('Notification permission granted.');
+                    console.log('✅ Permisos concedidos, obteniendo token...');
                     
-                    // Get registration token
-                    const token = await messaging.getToken();
-                    console.log('FCM Token:', token);
-                    
-                    return token;
-                } else {
-                    console.log('Unable to get permission to notify.');
+                    try {
+                        // Ensure service worker is ready
+                        const registration = await navigator.serviceWorker.ready;
+                        console.log('🔧 Service Worker listo:', registration);
+                        
+                        // Get registration token with service worker
+                        const token = await messaging.getToken({
+                            serviceWorkerRegistration: registration
+                        });
+                        
+                        if (token) {
+                            console.log('🎯 FCM Token obtenido:', token);
+                            console.log('📏 Token length:', token.length);
+                            updateTokenStatus(token);
+                            return token;
+                        } else {
+                            console.error('❌ No se pudo obtener el token FCM');
+                            updateTokenStatus(null);
+                            showNotification('No se pudo generar el token de notificación', 'error');
+                            return null;
+                        }
+                        
+                    } catch (tokenError) {
+                        console.error('❌ Error obteniendo token FCM:', tokenError);
+                        console.error('Error details:', {
+                            name: tokenError.name,
+                            message: tokenError.message,
+                            code: tokenError.code,
+                            stack: tokenError.stack
+                        });
+                        
+                        if (tokenError.code === 'messaging/unsupported-browser') {
+                            showNotification('Tu navegador no soporta notificaciones push', 'error');
+                        } else if (tokenError.code === 'messaging/permission-blocked') {
+                            showNotification('Los permisos de notificación están bloqueados', 'error');
+                        } else if (tokenError.code === 'messaging/vapid-key-required') {
+                            showNotification('Configuración VAPID requerida. Contacta al administrador.', 'error');
+                        } else {
+                            showNotification(`Error de configuración: ${tokenError.message}`, 'error');
+                        }
+                        return null;
+                    }
+                } else if (permission === 'denied') {
+                    console.log('❌ Permisos denegados por el usuario');
                     showNotification('Permisos de notificación denegados', 'error');
+                    return null;
+                } else {
+                    console.log('⏸️ Permisos pendientes (default)');
+                    showNotification('Permisos de notificación pendientes', 'info');
                     return null;
                 }
             } catch (error) {
-                console.error('An error occurred while retrieving token:', error);
-                showNotification('Error al obtener permisos de notificación', 'error');
+                console.error('❌ Error general en requestNotificationPermission:', error);
+                showNotification(`Error al solicitar permisos: ${error.message}`, 'error');
                 return null;
             }
         }
 
         async function enablePushNotifications() {
+            const btn = document.getElementById('enable-notifications-btn');
+            const originalText = btn.innerHTML;
+            
+            // Update button to loading state
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Configurando...';
+            btn.disabled = true;
+            
             try {
                 const token = await requestNotificationPermission();
                 
@@ -1860,19 +1962,28 @@
                         await addSubscriber(email, token);
                         
                         // Update button state
-                        const btn = document.getElementById('enable-notifications-btn');
                         btn.innerHTML = '<i class="fas fa-check mr-2"></i>Notificaciones Activadas';
-                        btn.disabled = true;
                         btn.classList.add('opacity-75');
                         
                         showNotification('¡Notificaciones push activadas correctamente!', 'success');
                     } else {
                         showNotification('Email requerido para activar notificaciones', 'error');
+                        // Reset button
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
                     }
+                } else {
+                    // Reset button if token couldn't be obtained
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 }
             } catch (error) {
                 console.error('Error enabling push notifications:', error);
                 showNotification('Error al activar notificaciones push', 'error');
+                
+                // Reset button
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         }
 
@@ -2034,30 +2145,145 @@
         async function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 try {
-                    // Register the service worker
-                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                    console.log('Service Worker registered successfully:', registration);
+                    console.log('🔧 Registrando Service Worker...');
                     
-                    // Update messaging service worker registration
-                    if (messaging) {
-                        messaging.useServiceWorker(registration);
+                    // First, try to register the Firebase messaging service worker
+                    let registration;
+                    try {
+                        registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+                            scope: '/'
+                        });
+                        console.log('✅ Service Worker registrado exitosamente:', registration);
+                    } catch (swError) {
+                        console.warn('⚠️ No se pudo registrar firebase-messaging-sw.js, creando service worker inline...');
+                        
+                        // Create inline service worker as fallback
+                        const swCode = `
+                            // Inline Firebase Messaging Service Worker
+                            importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+                            importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+
+                            firebase.initializeApp({
+                                apiKey: "AIzaSyBxcSLoWz_q2uXjFCV1xSJhWUfsv2j05uw",
+                                authDomain: "saltocast-14e2e.firebaseapp.com",
+                                databaseURL: "https://saltocast-14e2e-default-rtdb.firebaseio.com/",
+                                projectId: "saltocast-14e2e",
+                                storageBucket: "saltocast-14e2e.appspot.com",
+                                messagingSenderId: "923987766447",
+                                appId: "1:923987766447:web:cc6c66accd9b92fceaf85a"
+                            });
+
+                            const messaging = firebase.messaging();
+
+                            messaging.onBackgroundMessage((payload) => {
+                                console.log('Background message received:', payload);
+                                const notificationTitle = payload.notification?.title || 'SALTO CAST';
+                                const notificationOptions = {
+                                    body: payload.notification?.body || 'Nuevo episodio disponible',
+                                    icon: '/favicon.ico',
+                                    badge: '/favicon.ico'
+                                };
+                                return self.registration.showNotification(notificationTitle, notificationOptions);
+                            });
+                        `;
+                        
+                        const blob = new Blob([swCode], { type: 'application/javascript' });
+                        const swUrl = URL.createObjectURL(blob);
+                        
+                        registration = await navigator.serviceWorker.register(swUrl, {
+                            scope: '/'
+                        });
+                        console.log('✅ Service Worker inline registrado:', registration);
+                    }
+                    
+                    // Wait for the service worker to be ready
+                    await navigator.serviceWorker.ready;
+                    console.log('🎯 Service Worker está listo');
+                    
+                    // Update messaging service worker registration if messaging is available
+                    if (messaging && registration) {
+                        try {
+                            messaging.useServiceWorker(registration);
+                            console.log('🔗 Firebase Messaging vinculado al Service Worker');
+                        } catch (linkError) {
+                            console.warn('⚠️ No se pudo vincular Firebase Messaging al Service Worker:', linkError);
+                        }
                     }
                     
                     return registration;
                 } catch (error) {
-                    console.error('Service Worker registration failed:', error);
+                    console.error('❌ Error registrando Service Worker:', error);
+                    showNotification('Error al configurar notificaciones. Service Worker requerido.', 'error');
                     return null;
                 }
             } else {
-                console.log('Service Worker not supported');
+                console.log('❌ Service Worker no soportado en este navegador');
+                showNotification('Tu navegador no soporta Service Workers', 'error');
                 return null;
+            }
+        }
+
+        // Debug Functions
+        function updateDebugInfo() {
+            // Browser info
+            document.getElementById('browser-info').textContent = navigator.userAgent.split(' ').pop();
+            
+            // Notifications support
+            document.getElementById('notifications-support').textContent = 
+                'Notification' in window ? '✅ Soportado' : '❌ No soportado';
+            
+            // Service Worker support
+            document.getElementById('sw-support').textContent = 
+                'serviceWorker' in navigator ? '✅ Soportado' : '❌ No soportado';
+            
+            // Firebase Messaging support
+            document.getElementById('fcm-support').textContent = 
+                messagingSupported ? '✅ Disponible' : '❌ No disponible';
+            
+            // Permission status
+            if ('Notification' in window) {
+                document.getElementById('permission-status').textContent = 
+                    Notification.permission === 'granted' ? '✅ Concedido' :
+                    Notification.permission === 'denied' ? '❌ Denegado' : '⏸️ Pendiente';
+            } else {
+                document.getElementById('permission-status').textContent = '❌ No disponible';
+            }
+            
+            // Service Worker status
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    document.getElementById('sw-status').textContent = 
+                        registration ? '✅ Activo' : '❌ Inactivo';
+                }).catch(() => {
+                    document.getElementById('sw-status').textContent = '❌ Error';
+                });
+            } else {
+                document.getElementById('sw-status').textContent = '❌ No disponible';
+            }
+        }
+
+        function updateTokenStatus(token) {
+            const tokenEl = document.getElementById('token-status');
+            if (token) {
+                tokenEl.textContent = `✅ Generado (${token.substring(0, 20)}...)`;
+                tokenEl.title = token;
+            } else {
+                tokenEl.textContent = '❌ No generado';
             }
         }
 
         // Initialize public content
         document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Inicializando aplicación...');
+            
+            // Update debug info
+            updateDebugInfo();
+            
             // Register service worker first
             await registerServiceWorker();
+            
+            // Update debug info after service worker registration
+            setTimeout(updateDebugInfo, 1000);
             
             loadEpisodes();
             loadSubscribers();
@@ -2067,6 +2293,8 @@
             
             // Check if notifications are already enabled
             checkNotificationStatus();
+            
+            console.log('✅ Aplicación inicializada');
         });
 
         function checkNotificationStatus() {
@@ -2119,6 +2347,26 @@
             const notificationBtn = document.getElementById('enable-notifications-btn');
             if (notificationBtn) {
                 notificationBtn.addEventListener('click', enablePushNotifications);
+            }
+
+            // Debug panel toggle
+            const showDebugBtn = document.getElementById('show-debug');
+            const toggleDebugBtn = document.getElementById('toggle-debug');
+            const debugInfo = document.getElementById('debug-info');
+
+            if (showDebugBtn) {
+                showDebugBtn.addEventListener('click', () => {
+                    debugInfo.classList.remove('hidden');
+                    showDebugBtn.classList.add('hidden');
+                    updateDebugInfo();
+                });
+            }
+
+            if (toggleDebugBtn) {
+                toggleDebugBtn.addEventListener('click', () => {
+                    debugInfo.classList.add('hidden');
+                    showDebugBtn.classList.remove('hidden');
+                });
             }
         }
 
@@ -2497,5 +2745,5 @@
     Para enviar notificaciones desde el panel admin o mediante API, usa la Firebase Admin SDK
     o la API REST de FCM con los tokens guardados en la base de datos.
     -->
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9898cf8b74251169',t:'MTc1OTYyNDIyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9898e7ac80b31169',t:'MTc1OTYyNTIxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
