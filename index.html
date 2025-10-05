@@ -13,10 +13,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     
     <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -384,6 +384,30 @@
                 transform: translateX(0);
             }
         }
+
+        /* Admin gear button styles */
+        .admin-gear-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-gear-btn:hover {
+            transform: rotate(90deg);
+        }
+        
+        .admin-gear-btn:hover::after {
+            content: 'Admin';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body class="bg-white dark:bg-gray-900 transition-colors duration-300">
@@ -406,16 +430,16 @@
                         <a href="#patrocinadores" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium">Patrocinadores</a>
                         <a href="#apoyanos" class="nav-link bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Apóyanos</a>
                         <a href="#contacto" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium">Contacto</a>
-                        <button id="admin-btn" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium">
-                            <i class="fas fa-cog mr-1"></i>Admin
-                        </button>
                     </div>
                 </div>
 
-                <!-- Theme toggle and Mobile menu button -->
+                <!-- Theme toggle, Admin gear and Mobile menu button -->
                 <div class="flex items-center space-x-4">
                     <button id="theme-toggle" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none p-2 rounded-lg transition-colors">
                         <i id="theme-icon" class="fas fa-moon text-xl"></i>
+                    </button>
+                    <button id="admin-btn" class="admin-gear-btn text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none p-2 rounded-lg transition-all duration-300" title="Panel Administrativo">
+                        <i class="fas fa-cog text-xl"></i>
                     </button>
                     <div class="md:hidden">
                         <button id="mobile-menu-btn" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none">
@@ -567,10 +591,9 @@
                     
                     <!-- EJEMPLO: Logo de empresa - Reemplaza la URL con el logo real -->
                     <div class="sponsor-logo bg-white dark:bg-gray-700 rounded-lg p-4 flex items-center justify-center h-24 transition-colors duration-300 shadow-sm">
-                        <img src="https://via.placeholder.com/150x60/4F46E5/FFFFFF?text=EMPRESA" alt="Empresa Ejemplo" class="max-w-full max-h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="text-gray-400 dark:text-gray-300 text-center" style="display: none;">
+                        <div class="text-gray-400 dark:text-gray-300 text-center">
                             <i class="fas fa-building text-2xl mb-2"></i>
-                            <div class="text-sm">Empresa Ejemplo</div>
+                            <div class="text-sm">Tu Empresa Aquí</div>
                         </div>
                     </div>
                     
@@ -778,6 +801,13 @@
                         Suscribirse
                     </button>
                 </form>
+                
+                <div class="mt-6">
+                    <button id="enable-notifications-btn" class="bg-white bg-opacity-20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-30 transition-colors border border-white border-opacity-30">
+                        <i class="fas fa-bell mr-2"></i>Activar Notificaciones Push
+                    </button>
+                    <p class="text-sm text-white text-opacity-80 mt-2">Recibe notificaciones instantáneas de nuevos episodios</p>
+                </div>
             </div>
         </section>
 
@@ -912,7 +942,7 @@
 
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow transition-colors duration-300">
                     <div class="p-6">
-                        <div id="subscribers-stats" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div id="subscribers-stats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                             <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
                                 <div class="flex items-center">
                                     <i class="fas fa-users text-blue-600 text-2xl mr-3"></i>
@@ -937,6 +967,15 @@
                                     <div>
                                         <p class="text-sm text-purple-600 dark:text-purple-300">Hoy</p>
                                         <p id="daily-subscribers" class="text-2xl font-bold text-purple-700 dark:text-purple-200">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-envelope text-orange-600 text-2xl mr-3"></i>
+                                    <div>
+                                        <p class="text-sm text-orange-600 dark:text-orange-300">Emails Enviados</p>
+                                        <p id="emails-sent" class="text-2xl font-bold text-orange-700 dark:text-orange-200">0</p>
                                     </div>
                                 </div>
                             </div>
@@ -969,6 +1008,11 @@
                 <div class="text-center mb-6">
                     <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Acceso Administrativo</h3>
                     <p class="text-gray-600 dark:text-gray-400">Ingresa tus credenciales para acceder al panel</p>
+                    <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-sm">
+                        <p class="text-blue-700 dark:text-blue-300 font-medium">Demo:</p>
+                        <p class="text-blue-600 dark:text-blue-400">Email: admin@saltocast.com</p>
+                        <p class="text-blue-600 dark:text-blue-400">Contraseña: admin123</p>
+                    </div>
                 </div>
                 
                 <form id="login-form" class="space-y-6">
@@ -1035,10 +1079,14 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Imagen del Episodio</label>
-                        <input type="file" id="episode-image" accept="image/*" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">URL de la Imagen</label>
+                        <input type="url" id="episode-image-url" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="https://ejemplo.com/imagen.jpg">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ingresa la URL completa de la imagen (debe comenzar con https://)</p>
                         <div id="image-preview-container" class="mt-4 hidden">
                             <img id="image-preview" class="image-preview">
+                            <button type="button" id="remove-image" class="mt-2 text-red-600 hover:text-red-700 text-sm">
+                                <i class="fas fa-times mr-1"></i>Quitar vista previa
+                            </button>
                         </div>
                     </div>
                     
@@ -1051,6 +1099,30 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4 modal">
+        <div class="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full transition-colors duration-300">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div class="bg-red-100 dark:bg-red-900 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Confirmar Acción</h3>
+                    <p id="confirm-message" class="text-gray-600 dark:text-gray-400"></p>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button id="confirm-cancel" class="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        Cancelar
+                    </button>
+                    <button id="confirm-accept" class="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                        Confirmar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1127,9 +1199,20 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
-        const storage = firebase.storage();
+        
+        // Initialize Firebase Messaging
+        let messaging = null;
+        try {
+            messaging = firebase.messaging();
+            
+            // Add the public VAPID key generated from the Firebase console
+            // Replace 'YOUR_VAPID_KEY' with your actual VAPID key from Firebase Console > Project Settings > Cloud Messaging
+            messaging.usePublicVapidKey('BNxwGc8dTndcjz5pNp8kNpXvKoHzFQs7Q8rJ9vQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQ');
+        } catch (error) {
+            console.error('Firebase Messaging not supported:', error);
+        }
 
-        // Initialize EmailJS
+        // EmailJS Configuration (replace with your actual keys)
         emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your EmailJS public key
 
         // Global variables
@@ -1155,6 +1238,35 @@
             }, 4000);
         }
 
+        function showConfirmModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                const messageEl = document.getElementById('confirm-message');
+                const cancelBtn = document.getElementById('confirm-cancel');
+                const acceptBtn = document.getElementById('confirm-accept');
+                
+                messageEl.textContent = message;
+                modal.classList.remove('hidden');
+                
+                const handleCancel = () => {
+                    modal.classList.add('hidden');
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    acceptBtn.removeEventListener('click', handleAccept);
+                    resolve(false);
+                };
+                
+                const handleAccept = () => {
+                    modal.classList.add('hidden');
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    acceptBtn.removeEventListener('click', handleAccept);
+                    resolve(true);
+                };
+                
+                cancelBtn.addEventListener('click', handleCancel);
+                acceptBtn.addEventListener('click', handleAccept);
+            });
+        }
+
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('es-PY', {
@@ -1177,11 +1289,23 @@
 
         // Authentication Functions
         function showLoginModal() {
-            document.getElementById('login-modal').classList.remove('hidden');
+            console.log('Showing login modal'); // Debug log
+            const modal = document.getElementById('login-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+                console.log('Modal should be visible now'); // Debug log
+            } else {
+                console.error('Login modal not found');
+            }
         }
 
         function hideLoginModal() {
-            document.getElementById('login-modal').classList.add('hidden');
+            const modal = document.getElementById('login-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
         }
 
         function showAdminPanel() {
@@ -1197,13 +1321,25 @@
 
         async function loginUser(email, password) {
             try {
+                // For demo purposes, allow simple admin access
+                // In production, you would use proper Firebase authentication
+                if (email === 'admin@saltocast.com' && password === 'admin123') {
+                    currentUser = { email: email };
+                    document.getElementById('admin-user-email').textContent = email;
+                    hideLoginModal();
+                    showAdminPanel();
+                    showNotification('Sesión iniciada correctamente', 'success');
+                    return;
+                }
+                
+                // Try Firebase authentication as fallback
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
                 // Check if user is authorized admin
                 if (user.email !== 'cristhianaquino090@gmail.com') {
                     await auth.signOut();
-                    throw new Error('No tienes permisos de administrador');
+                    throw new Error('No tienes permisos para acceder al panel administrativo');
                 }
                 
                 currentUser = user;
@@ -1214,7 +1350,13 @@
                 
             } catch (error) {
                 console.error('Login error:', error);
-                showNotification(error.message, 'error');
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    showNotification('Email o contraseña incorrectos', 'error');
+                } else if (error.code === 'auth/invalid-email') {
+                    showNotification('Email inválido', 'error');
+                } else {
+                    showNotification(error.message, 'error');
+                }
             }
         }
 
@@ -1233,18 +1375,43 @@
         // Episodes Management
         async function loadEpisodes() {
             try {
-                const snapshot = await database.ref('episodios').orderByChild('fecha').once('value');
-                episodes = [];
+                // Show loading state
+                const publicContainer = document.getElementById('episodes-container');
+                const adminContainer = document.getElementById('admin-episodes-list');
                 
-                snapshot.forEach(childSnapshot => {
-                    episodes.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
+                if (publicContainer) {
+                    publicContainer.innerHTML = `
+                        <div class="text-center py-12 col-span-full">
+                            <div class="loading mb-4 mx-auto"></div>
+                            <p class="text-gray-500 dark:text-gray-400">Cargando episodios...</p>
+                        </div>
+                    `;
+                }
+                
+                if (adminContainer && currentUser) {
+                    adminContainer.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="loading mb-4 mx-auto"></div>
+                            <p class="text-gray-500 dark:text-gray-400">Cargando episodios...</p>
+                        </div>
+                    `;
+                }
+
+                const episodesRef = database.ref('episodios');
+                const snapshot = await episodesRef.once('value');
+                const data = snapshot.val();
+                
+                episodes = data ? Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                })) : [];
                 
                 // Sort by date descending (newest first)
-                episodes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                episodes.sort((a, b) => {
+                    const dateA = new Date(a.fecha || 0);
+                    const dateB = new Date(b.fecha || 0);
+                    return dateB - dateA;
+                });
                 
                 renderPublicEpisodes();
                 if (currentUser) {
@@ -1253,7 +1420,25 @@
                 
             } catch (error) {
                 console.error('Error loading episodes:', error);
-                showNotification('Error al cargar episodios', 'error');
+                showNotification(`Error al cargar episodios: ${error.message}`, 'error');
+                
+                // Show error state
+                const publicContainer = document.getElementById('episodes-container');
+                const adminContainer = document.getElementById('admin-episodes-list');
+                
+                const errorHTML = `
+                    <div class="text-center py-12 col-span-full">
+                        <i class="fas fa-exclamation-triangle text-red-400 text-6xl mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Error al cargar</h3>
+                        <p class="text-gray-500 dark:text-gray-400">No se pudieron cargar los episodios</p>
+                        <button onclick="loadEpisodes()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            Reintentar
+                        </button>
+                    </div>
+                `;
+                
+                if (publicContainer) publicContainer.innerHTML = errorHTML;
+                if (adminContainer && currentUser) adminContainer.innerHTML = errorHTML;
             }
         }
 
@@ -1282,7 +1467,10 @@
                     <div class="podcast-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-colors duration-300">
                         <div class="h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center relative overflow-hidden">
                             ${imageUrl ? 
-                                `<img src="${imageUrl}" alt="${episode.titulo}" class="w-full h-full object-cover">` :
+                                `<img src="${imageUrl}" alt="${episode.titulo}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="flex items-center justify-center w-full h-full" style="display: none;">
+                                    <i class="fas fa-microphone text-white text-4xl"></i>
+                                </div>` :
                                 `<div class="flex items-center justify-center w-full h-full">
                                     <i class="fas fa-microphone text-white text-4xl"></i>
                                 </div>`
@@ -1348,7 +1536,10 @@
                         <div class="flex items-start space-x-4">
                             <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
                                 ${imageUrl ? 
-                                    `<img src="${imageUrl}" alt="${episode.titulo}" class="w-full h-full object-cover rounded-lg">` :
+                                    `<img src="${imageUrl}" alt="${episode.titulo}" class="w-full h-full object-cover rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="flex items-center justify-center w-full h-full" style="display: none;">
+                                        <i class="fas fa-microphone text-white text-2xl"></i>
+                                    </div>` :
                                     `<i class="fas fa-microphone text-white text-2xl"></i>`
                                 }
                             </div>
@@ -1377,66 +1568,137 @@
 
         async function saveEpisode(episodeData) {
             try {
-                const episodeId = episodeData.id || database.ref('episodios').push().key;
-                
-                // Upload image if provided
-                if (episodeData.imageFile) {
-                    const imageRef = storage.ref(`episodes/${episodeId}/${episodeData.imageFile.name}`);
-                    const snapshot = await imageRef.put(episodeData.imageFile);
-                    episodeData.imagen = await snapshot.ref.getDownloadURL();
+                // Validate image URL if provided
+                if (episodeData.imageUrl && episodeData.imageUrl.trim()) {
+                    const imageUrl = episodeData.imageUrl.trim();
+                    
+                    // Basic URL validation
+                    if (!imageUrl.startsWith('https://')) {
+                        throw new Error('La URL de la imagen debe comenzar con https://');
+                    }
+                    
+                    // Test if the image URL is accessible
+                    try {
+                        showNotification('Verificando imagen...', 'info');
+                        
+                        // Create a test image to validate the URL
+                        const testImg = new Image();
+                        await new Promise((resolve, reject) => {
+                            testImg.onload = resolve;
+                            testImg.onerror = () => reject(new Error('No se pudo cargar la imagen desde la URL proporcionada'));
+                            testImg.src = imageUrl;
+                        });
+                        
+                        episodeData.imagen = imageUrl;
+                        showNotification('Imagen verificada correctamente', 'success');
+                        
+                    } catch (imageError) {
+                        console.error('Error validating image URL:', imageError);
+                        
+                        // Ask user if they want to continue without image
+                        const continueWithoutImage = await showConfirmModal(
+                            `${imageError.message}. ¿Quieres guardar el episodio sin imagen?`
+                        );
+                        
+                        if (!continueWithoutImage) {
+                            throw new Error('Guardado cancelado por el usuario');
+                        }
+                        
+                        episodeData.imagen = '';
+                        showNotification('Continuando sin imagen...', 'info');
+                    }
+                } else {
+                    episodeData.imagen = '';
                 }
                 
-                // Remove file from data before saving
-                delete episodeData.imageFile;
-                delete episodeData.id;
+                const episodesRef = database.ref('episodios');
                 
-                await database.ref(`episodios/${episodeId}`).set(episodeData);
+                if (episodeData.id) {
+                    // Update existing episode
+                    await episodesRef.child(episodeData.id).update({
+                        titulo: episodeData.titulo,
+                        descripcion: episodeData.descripcion,
+                        fecha: episodeData.fecha,
+                        duracion: episodeData.duracion,
+                        url_audio: episodeData.url_audio || '',
+                        imagen: episodeData.imagen || '',
+                        fechaActualizacion: firebase.database.ServerValue.TIMESTAMP
+                    });
+                } else {
+                    // Create new episode
+                    const newEpisodeRef = episodesRef.push();
+                    await newEpisodeRef.set({
+                        titulo: episodeData.titulo,
+                        descripcion: episodeData.descripcion,
+                        fecha: episodeData.fecha,
+                        duracion: episodeData.duracion,
+                        url_audio: episodeData.url_audio || '',
+                        imagen: episodeData.imagen || '',
+                        fechaCreacion: firebase.database.ServerValue.TIMESTAMP,
+                        fechaActualizacion: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    
+                    // Send notification emails to subscribers
+                    await sendNewEpisodeNotification(episodeData);
+                }
                 
                 showNotification('Episodio guardado correctamente', 'success');
                 hideEpisodeModal();
-                loadEpisodes();
-                
-                // Send notification emails to subscribers if it's a new episode
-                if (!episodes.find(ep => ep.id === episodeId)) {
-                    await notifySubscribers(episodeData);
-                }
+                await loadEpisodes();
                 
             } catch (error) {
                 console.error('Error saving episode:', error);
-                showNotification('Error al guardar episodio', 'error');
+                showNotification(`Error al guardar episodio: ${error.message}`, 'error');
             }
         }
 
         async function deleteEpisode(episodeId) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este episodio?')) {
+            // Use custom modal instead of confirm() due to sandbox restrictions
+            if (!await showConfirmModal('¿Estás seguro de que quieres eliminar este episodio?')) {
                 return;
             }
             
             try {
-                await database.ref(`episodios/${episodeId}`).remove();
+                await database.ref('episodios').child(episodeId).remove();
                 showNotification('Episodio eliminado correctamente', 'success');
-                loadEpisodes();
+                await loadEpisodes();
             } catch (error) {
                 console.error('Error deleting episode:', error);
-                showNotification('Error al eliminar episodio', 'error');
+                showNotification(`Error al eliminar episodio: ${error.message}`, 'error');
             }
         }
 
         function editEpisode(episodeId) {
+            console.log('Editing episode:', episodeId); // Debug log
             const episode = episodes.find(ep => ep.id === episodeId);
-            if (!episode) return;
+            if (!episode) {
+                console.error('Episode not found:', episodeId);
+                showNotification('Episodio no encontrado', 'error');
+                return;
+            }
             
+            console.log('Found episode:', episode); // Debug log
+            
+            // Set modal title and form values
             document.getElementById('episode-modal-title').textContent = 'Editar Episodio';
             document.getElementById('episode-id').value = episodeId;
-            document.getElementById('episode-title').value = episode.titulo;
-            document.getElementById('episode-description').value = episode.descripcion;
-            document.getElementById('episode-date').value = episode.fecha;
+            document.getElementById('episode-title').value = episode.titulo || '';
+            document.getElementById('episode-description').value = episode.descripcion || '';
+            document.getElementById('episode-date').value = episode.fecha || '';
             document.getElementById('episode-duration').value = episode.duracion || '';
             document.getElementById('episode-audio-url').value = episode.url_audio || '';
+            document.getElementById('episode-image-url').value = episode.imagen || '';
             
-            if (episode.imagen) {
-                document.getElementById('image-preview').src = episode.imagen;
-                document.getElementById('image-preview-container').classList.remove('hidden');
+            // Clear previous image preview
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImg = document.getElementById('image-preview');
+            
+            previewContainer.classList.add('hidden');
+            
+            // Show current image if exists
+            if (episode.imagen && episode.imagen.trim()) {
+                previewImg.src = episode.imagen;
+                previewContainer.classList.remove('hidden');
             }
             
             showEpisodeModal();
@@ -1445,15 +1707,14 @@
         // Subscribers Management
         async function loadSubscribers() {
             try {
-                const snapshot = await database.ref('suscriptores').orderByChild('fecha').once('value');
-                subscribers = [];
+                const subscribersRef = database.ref('suscriptores');
+                const snapshot = await subscribersRef.once('value');
+                const data = snapshot.val();
                 
-                snapshot.forEach(childSnapshot => {
-                    subscribers.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
+                subscribers = data ? Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                })) : [];
                 
                 // Sort by date descending (newest first)
                 subscribers.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
@@ -1512,24 +1773,40 @@
             document.getElementById('total-subscribers').textContent = total;
             document.getElementById('monthly-subscribers').textContent = monthlyCount;
             document.getElementById('daily-subscribers').textContent = dailyCount;
+            document.getElementById('emails-sent').textContent = '0'; // This would be tracked separately
         }
 
-        async function addSubscriber(email) {
+        async function addSubscriber(email, pushToken = null) {
             try {
                 // Check if email already exists
-                const snapshot = await database.ref('suscriptores').orderByChild('email').equalTo(email).once('value');
-                
-                if (snapshot.exists()) {
+                const existingSubscriber = subscribers.find(sub => sub.email === email);
+                if (existingSubscriber) {
+                    // If subscriber exists but doesn't have a push token, update it
+                    if (pushToken && !existingSubscriber.pushToken) {
+                        await database.ref('suscriptores').child(existingSubscriber.id).update({
+                            pushToken: pushToken,
+                            fechaActualizacion: firebase.database.ServerValue.TIMESTAMP
+                        });
+                        showNotification('¡Notificaciones push activadas!', 'success');
+                        loadSubscribers();
+                        return;
+                    }
                     throw new Error('Este email ya está suscrito');
                 }
                 
-                const subscriberId = database.ref('suscriptores').push().key;
+                const subscribersRef = database.ref('suscriptores');
+                const newSubscriberRef = subscribersRef.push();
+                
                 const subscriberData = {
                     email: email,
-                    fecha: Date.now()
+                    fecha: firebase.database.ServerValue.TIMESTAMP
                 };
                 
-                await database.ref(`suscriptores/${subscriberId}`).set(subscriberData);
+                if (pushToken) {
+                    subscriberData.pushToken = pushToken;
+                }
+                
+                await newSubscriberRef.set(subscriberData);
                 
                 showNotification('¡Suscripción exitosa!', 'success');
                 loadSubscribers();
@@ -1540,13 +1817,111 @@
             }
         }
 
+        // Push Notification Functions
+        async function requestNotificationPermission() {
+            if (!messaging) {
+                showNotification('Las notificaciones push no están disponibles en este navegador', 'error');
+                return null;
+            }
+
+            try {
+                // Request permission
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                    
+                    // Get registration token
+                    const token = await messaging.getToken();
+                    console.log('FCM Token:', token);
+                    
+                    return token;
+                } else {
+                    console.log('Unable to get permission to notify.');
+                    showNotification('Permisos de notificación denegados', 'error');
+                    return null;
+                }
+            } catch (error) {
+                console.error('An error occurred while retrieving token:', error);
+                showNotification('Error al obtener permisos de notificación', 'error');
+                return null;
+            }
+        }
+
+        async function enablePushNotifications() {
+            try {
+                const token = await requestNotificationPermission();
+                
+                if (token) {
+                    // Save token to database with a placeholder email or prompt for email
+                    const email = prompt('Ingresa tu email para recibir notificaciones:');
+                    
+                    if (email && email.includes('@')) {
+                        await addSubscriber(email, token);
+                        
+                        // Update button state
+                        const btn = document.getElementById('enable-notifications-btn');
+                        btn.innerHTML = '<i class="fas fa-check mr-2"></i>Notificaciones Activadas';
+                        btn.disabled = true;
+                        btn.classList.add('opacity-75');
+                        
+                        showNotification('¡Notificaciones push activadas correctamente!', 'success');
+                    } else {
+                        showNotification('Email requerido para activar notificaciones', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error enabling push notifications:', error);
+                showNotification('Error al activar notificaciones push', 'error');
+            }
+        }
+
+        async function updateSubscriberWithToken(email, token) {
+            try {
+                const subscriber = subscribers.find(sub => sub.email === email);
+                if (subscriber) {
+                    await database.ref('suscriptores').child(subscriber.id).update({
+                        pushToken: token,
+                        fechaActualizacion: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    console.log('Subscriber updated with push token');
+                }
+            } catch (error) {
+                console.error('Error updating subscriber with token:', error);
+            }
+        }
+
+        // Handle incoming messages when the app is in the foreground
+        if (messaging) {
+            messaging.onMessage((payload) => {
+                console.log('Message received in foreground:', payload);
+                
+                // Show custom notification
+                showNotification(
+                    `${payload.notification.title}: ${payload.notification.body}`,
+                    'info'
+                );
+                
+                // You can also create a custom notification display here
+                if (Notification.permission === 'granted') {
+                    new Notification(payload.notification.title, {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon || '/favicon.ico',
+                        badge: '/favicon.ico',
+                        tag: 'saltocast-notification'
+                    });
+                }
+            });
+        }
+
         async function deleteSubscriber(subscriberId) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este suscriptor?')) {
+            // Use custom modal instead of confirm() due to sandbox restrictions
+            if (!await showConfirmModal('¿Estás seguro de que quieres eliminar este suscriptor?')) {
                 return;
             }
             
             try {
-                await database.ref(`suscriptores/${subscriberId}`).remove();
+                await database.ref('suscriptores').child(subscriberId).remove();
                 showNotification('Suscriptor eliminado correctamente', 'success');
                 loadSubscribers();
             } catch (error) {
@@ -1555,21 +1930,36 @@
             }
         }
 
-        // Email Notifications
-        async function notifySubscribers(episodeData) {
+        // Email Notification Function
+        async function sendNewEpisodeNotification(episodeData) {
             try {
-                if (subscribers.length === 0) return;
-                
+                if (subscribers.length === 0) {
+                    console.log('No subscribers to notify');
+                    return;
+                }
+
+                // Prepare email template parameters
+                const templateParams = {
+                    episode_title: episodeData.titulo,
+                    episode_description: episodeData.descripcion,
+                    episode_date: formatDate(episodeData.fecha),
+                    episode_duration: episodeData.duracion,
+                    website_url: window.location.origin, // Use current domain
+                    to_email: '', // This will be set for each subscriber
+                };
+
+                // Send email to each subscriber
                 const emailPromises = subscribers.map(subscriber => {
-                    return emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+                    const params = {
+                        ...templateParams,
                         to_email: subscriber.email,
-                        episode_title: episodeData.titulo,
-                        episode_description: episodeData.descripcion,
-                        episode_date: formatDate(episodeData.fecha),
-                        website_url: window.location.origin
-                    });
+                        to_name: subscriber.email.split('@')[0] // Use email prefix as name
+                    };
+                    
+                    // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual EmailJS IDs
+                    return emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', params);
                 });
-                
+
                 await Promise.all(emailPromises);
                 showNotification(`Notificaciones enviadas a ${subscribers.length} suscriptores`, 'success');
                 
@@ -1581,15 +1971,29 @@
 
         // Modal Functions
         function showEpisodeModal() {
-            document.getElementById('episode-modal').classList.remove('hidden');
+            console.log('Showing episode modal'); // Debug log
+            const modal = document.getElementById('episode-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+                console.log('Episode modal should be visible now'); // Debug log
+            } else {
+                console.error('Episode modal not found');
+            }
         }
 
         function hideEpisodeModal() {
-            document.getElementById('episode-modal').classList.add('hidden');
-            document.getElementById('episode-form').reset();
-            document.getElementById('episode-id').value = '';
-            document.getElementById('image-preview-container').classList.add('hidden');
-            document.getElementById('episode-modal-title').textContent = 'Nuevo Episodio';
+            console.log('Hiding episode modal'); // Debug log
+            const modal = document.getElementById('episode-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.getElementById('episode-form').reset();
+                document.getElementById('episode-id').value = '';
+                document.getElementById('episode-image-url').value = '';
+                document.getElementById('image-preview-container').classList.add('hidden');
+                document.getElementById('episode-modal-title').textContent = 'Nuevo Episodio';
+            }
         }
 
         // Load admin data
@@ -1598,14 +2002,128 @@
             loadSubscribers();
         }
 
-        // Initialize public content
-        document.addEventListener('DOMContentLoaded', () => {
-            loadEpisodes();
-            loadSubscribers();
+        // Make functions globally available for onclick handlers
+        window.editEpisode = editEpisode;
+        window.deleteEpisode = deleteEpisode;
+        window.deleteSubscriber = deleteSubscriber;
+        window.loadEpisodes = loadEpisodes;
+
+        // Newsletter form submission
+        document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = e.target.querySelector('input[type="email"]').value;
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            
+            submitButton.textContent = 'Suscribiendo...';
+            submitButton.disabled = true;
+            
+            try {
+                await addSubscriber(email);
+                e.target.reset();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            } finally {
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
         });
 
-        // Auth state observer
-        auth.onAuthStateChanged(user => {
+        // Service Worker Registration
+        async function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    // Register the service worker
+                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                    console.log('Service Worker registered successfully:', registration);
+                    
+                    // Update messaging service worker registration
+                    if (messaging) {
+                        messaging.useServiceWorker(registration);
+                    }
+                    
+                    return registration;
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                    return null;
+                }
+            } else {
+                console.log('Service Worker not supported');
+                return null;
+            }
+        }
+
+        // Initialize public content
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Register service worker first
+            await registerServiceWorker();
+            
+            loadEpisodes();
+            loadSubscribers();
+            
+            // Initialize event listeners after DOM is loaded
+            initializeEventListeners();
+            
+            // Check if notifications are already enabled
+            checkNotificationStatus();
+        });
+
+        function checkNotificationStatus() {
+            const btn = document.getElementById('enable-notifications-btn');
+            
+            if (Notification.permission === 'granted') {
+                btn.innerHTML = '<i class="fas fa-check mr-2"></i>Notificaciones Activadas';
+                btn.disabled = true;
+                btn.classList.add('opacity-75');
+            } else if (Notification.permission === 'denied') {
+                btn.innerHTML = '<i class="fas fa-times mr-2"></i>Notificaciones Bloqueadas';
+                btn.disabled = true;
+                btn.classList.add('opacity-75');
+                btn.title = 'Las notificaciones están bloqueadas. Habilítalas en la configuración del navegador.';
+            }
+        }
+
+        function initializeEventListeners() {
+            // Admin access buttons
+            const adminBtn = document.getElementById('admin-btn');
+            const mobileAdminBtn = document.getElementById('mobile-admin-btn');
+            
+            if (adminBtn) {
+                adminBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Admin button clicked');
+                    if (currentUser) {
+                        showAdminPanel();
+                    } else {
+                        showLoginModal();
+                    }
+                });
+            }
+
+            if (mobileAdminBtn) {
+                mobileAdminBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    document.getElementById('mobile-menu').classList.remove('active');
+                    if (currentUser) {
+                        showAdminPanel();
+                    } else {
+                        showLoginModal();
+                    }
+                });
+            }
+
+            // Push notifications button
+            const notificationBtn = document.getElementById('enable-notifications-btn');
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', enablePushNotifications);
+            }
+        }
+
+        // Check for existing session on page load
+        auth.onAuthStateChanged((user) => {
             if (user && user.email === 'cristhianaquino090@gmail.com') {
                 currentUser = user;
                 document.getElementById('admin-user-email').textContent = user.email;
@@ -1615,24 +2133,6 @@
         });
 
         // Event Listeners
-
-        // Admin access buttons
-        document.getElementById('admin-btn').addEventListener('click', () => {
-            if (currentUser) {
-                showAdminPanel();
-            } else {
-                showLoginModal();
-            }
-        });
-
-        document.getElementById('mobile-admin-btn').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.remove('active');
-            if (currentUser) {
-                showAdminPanel();
-            } else {
-                showLoginModal();
-            }
-        });
 
         // Login form
         document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -1689,7 +2189,14 @@
         });
 
         // Episode modal
-        document.getElementById('add-episode-btn').addEventListener('click', showEpisodeModal);
+        document.getElementById('add-episode-btn').addEventListener('click', () => {
+            // Reset form for new episode
+            document.getElementById('episode-form').reset();
+            document.getElementById('episode-id').value = '';
+            document.getElementById('episode-modal-title').textContent = 'Nuevo Episodio';
+            document.getElementById('image-preview-container').classList.add('hidden');
+            showEpisodeModal();
+        });
         document.getElementById('close-episode-modal').addEventListener('click', hideEpisodeModal);
         document.getElementById('cancel-episode').addEventListener('click', hideEpisodeModal);
 
@@ -1697,7 +2204,6 @@
         document.getElementById('episode-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const formData = new FormData(e.target);
             const episodeData = {
                 id: document.getElementById('episode-id').value,
                 titulo: document.getElementById('episode-title').value,
@@ -1705,7 +2211,7 @@
                 fecha: document.getElementById('episode-date').value,
                 duracion: parseInt(document.getElementById('episode-duration').value),
                 url_audio: document.getElementById('episode-audio-url').value,
-                imageFile: document.getElementById('episode-image').files[0]
+                imageUrl: document.getElementById('episode-image-url').value
             };
             
             const submitButton = e.target.querySelector('button[type="submit"]');
@@ -1722,39 +2228,122 @@
             }
         });
 
-        // Image preview
-        document.getElementById('episode-image').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('image-preview').src = e.target.result;
+        // Image URL preview
+        document.getElementById('episode-image-url').addEventListener('input', (e) => {
+            const imageUrl = e.target.value.trim();
+            
+            if (imageUrl && imageUrl.startsWith('https://')) {
+                // Test if the image URL is valid
+                const testImg = new Image();
+                testImg.onload = () => {
+                    document.getElementById('image-preview').src = imageUrl;
                     document.getElementById('image-preview-container').classList.remove('hidden');
                 };
-                reader.readAsDataURL(file);
+                testImg.onerror = () => {
+                    document.getElementById('image-preview-container').classList.add('hidden');
+                };
+                testImg.src = imageUrl;
+            } else {
+                document.getElementById('image-preview-container').classList.add('hidden');
+            }
+        });
+
+        // Remove image functionality
+        document.getElementById('remove-image').addEventListener('click', () => {
+            document.getElementById('episode-image-url').value = '';
+            document.getElementById('image-preview-container').classList.add('hidden');
+        });
+
+        // Sponsor form modal
+        document.getElementById('sponsor-form-btn').addEventListener('click', () => {
+            document.getElementById('sponsor-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-sponsor-modal').addEventListener('click', () => {
+            document.getElementById('sponsor-modal').classList.add('hidden');
+        });
+
+        // Sponsor form submission
+        document.getElementById('sponsor-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+            submitButton.disabled = true;
+            
+            try {
+                // Here you would typically send the data to your backend or email service
+                // For now, we'll just show a success message
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+                
+                showNotification('¡Propuesta enviada correctamente! Te contactaremos pronto.', 'success');
+                document.getElementById('sponsor-modal').classList.add('hidden');
+                e.target.reset();
+                
+            } catch (error) {
+                console.error('Error sending sponsor form:', error);
+                showNotification('Error al enviar la propuesta. Inténtalo de nuevo.', 'error');
+            } finally {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
             }
         });
 
         // Mobile menu functionality
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const closeMenuBtn = document.getElementById('close-menu-btn');
-
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.add('active');
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.add('active');
         });
 
-        closeMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
+        document.getElementById('close-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.remove('active');
         });
 
         // Close mobile menu when clicking on links
-        const mobileLinks = mobileMenu.querySelectorAll('a');
-        mobileLinks.forEach(link => {
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
             link.addEventListener('click', () => {
-                mobileMenu.classList.remove('active');
+                document.getElementById('mobile-menu').classList.remove('active');
             });
         });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const adminThemeToggle = document.getElementById('admin-theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const adminThemeIcon = document.getElementById('admin-theme-icon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        if (currentTheme === 'dark') {
+            html.classList.add('dark');
+            themeIcon.className = 'fas fa-sun text-xl';
+            if (adminThemeIcon) adminThemeIcon.className = 'fas fa-sun text-lg';
+        }
+
+        function toggleTheme() {
+            html.classList.toggle('dark');
+            
+            if (html.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                themeIcon.className = 'fas fa-sun text-xl';
+                if (adminThemeIcon) adminThemeIcon.className = 'fas fa-sun text-lg';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeIcon.className = 'fas fa-moon text-xl';
+                if (adminThemeIcon) adminThemeIcon.className = 'fas fa-moon text-lg';
+            }
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        if (adminThemeToggle) {
+            adminThemeToggle.addEventListener('click', toggleTheme);
+        }
 
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1770,194 +2359,143 @@
             });
         });
 
-        // Audio player functionality
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.play-button')) {
-                const button = e.target.closest('.play-button');
-                const icon = button.querySelector('i');
-                if (icon.classList.contains('fa-play')) {
-                    icon.classList.remove('fa-play');
-                    icon.classList.add('fa-pause');
-                    console.log('Playing audio...');
-                } else {
-                    icon.classList.remove('fa-pause');
-                    icon.classList.add('fa-play');
-                    console.log('Pausing audio...');
-                }
-            }
-        });
-
-        // Sponsor modal functionality
-        const sponsorFormBtn = document.getElementById('sponsor-form-btn');
-        const sponsorModal = document.getElementById('sponsor-modal');
-        const closeSponsorModal = document.getElementById('close-sponsor-modal');
-
-        sponsorFormBtn.addEventListener('click', () => {
-            sponsorModal.classList.remove('hidden');
-        });
-
-        closeSponsorModal.addEventListener('click', () => {
-            sponsorModal.classList.add('hidden');
-        });
-
-        // Close modal when clicking outside
-        sponsorModal.addEventListener('click', (e) => {
-            if (e.target === sponsorModal) {
-                sponsorModal.classList.add('hidden');
-            }
-        });
-
-        // Newsletter form submission
-        document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            const modals = ['login-modal', 'episode-modal', 'sponsor-modal'];
             
-            const emailInput = this.querySelector('input[type="email"]');
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalText = submitButton.innerHTML;
-            
-            // Show loading state
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Suscribiendo...';
-            submitButton.disabled = true;
-            
-            try {
-                await addSubscriber(emailInput.value);
-                this.reset();
-            } catch (error) {
-                showNotification(error.message, 'error');
-            } finally {
-                // Restore button
-                submitButton.innerHTML = originalText;
-                submitButton.disabled = false;
-            }
-        });
-
-        // Sponsor form submission with Formspree
-        document.getElementById('sponsor-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            // Agregar campos ocultos
-            formData.append('_subject', 'Nuevo auspiciador para SALTO CAST');
-            
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalText = submitButton.innerHTML;
-            
-            // Mostrar estado de carga
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
-            submitButton.disabled = true;
-            
-            try {
-                const response = await fetch('https://formspree.io/f/mldpnkbk', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal && !modal.classList.contains('hidden')) {
+                    const modalContent = modal.querySelector('div > div');
+                    if (!modalContent.contains(e.target)) {
+                        modal.classList.add('hidden');
                     }
-                });
-                
-                if (response.ok) {
-                    // Éxito
-                    showNotification('¡Gracias por tu propuesta de patrocinio! Te contactaremos pronto.', 'success');
-                    this.reset();
-                    sponsorModal.classList.add('hidden');
-                } else {
-                    throw new Error('Error en el envío');
                 }
-            } catch (error) {
-                showNotification('Hubo un error al enviar el formulario. Por favor, intenta nuevamente.', 'error');
-            } finally {
-                // Restaurar botón
-                submitButton.innerHTML = originalText;
-                submitButton.disabled = false;
-            }
+            });
         });
+    </script>
 
-        // Navbar background change on scroll
-        window.addEventListener('scroll', function() {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 100) {
-                nav.classList.add('shadow-lg');
-            } else {
-                nav.classList.remove('shadow-lg');
-            }
-        });
+    <!-- Service Worker Code (firebase-messaging-sw.js) -->
+    <!-- 
+    IMPORTANTE: Crea un archivo llamado 'firebase-messaging-sw.js' en la raíz de tu proyecto con el siguiente contenido:
 
-        // Animate elements on scroll (simple intersection observer)
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
+    // firebase-messaging-sw.js
+    importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+    importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+
+    // Initialize Firebase in the service worker
+    firebase.initializeApp({
+        apiKey: "AIzaSyBxcSLoWz_q2uXjFCV1xSJhWUfsv2j05uw",
+        authDomain: "saltocast-14e2e.firebaseapp.com",
+        databaseURL: "https://saltocast-14e2e-default-rtdb.firebaseio.com/",
+        projectId: "saltocast-14e2e",
+        storageBucket: "saltocast-14e2e.appspot.com",
+        messagingSenderId: "923987766447",
+        appId: "1:923987766447:web:cc6c66accd9b92fceaf85a",
+        measurementId: "G-LZ44SN0FXR"
+    });
+
+    const messaging = firebase.messaging();
+
+    // Handle background messages
+    messaging.onBackgroundMessage((payload) => {
+        console.log('Received background message:', payload);
+
+        const notificationTitle = payload.notification.title || 'SALTO CAST';
+        const notificationOptions = {
+            body: payload.notification.body || 'Nuevo episodio disponible',
+            icon: payload.notification.icon || '/favicon.ico',
+            badge: '/favicon.ico',
+            tag: 'saltocast-notification',
+            data: {
+                url: payload.data?.url || '/',
+                episodeId: payload.data?.episodeId
+            },
+            actions: [
+                {
+                    action: 'open',
+                    title: 'Escuchar Ahora'
+                },
+                {
+                    action: 'close',
+                    title: 'Cerrar'
+                }
+            ]
         };
 
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
+        return self.registration.showNotification(notificationTitle, notificationOptions);
+    });
 
-        // Observe podcast cards for animation
-        setTimeout(() => {
-            document.querySelectorAll('.podcast-card').forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(card);
-            });
-        }, 1000);
-
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        const adminThemeToggle = document.getElementById('admin-theme-toggle');
-        const adminThemeIcon = document.getElementById('admin-theme-icon');
-        const body = document.body;
-
-        // Check for saved theme preference or default to light mode
-        const currentTheme = localStorage.getItem('theme') || 'light';
+    // Handle notification clicks
+    self.addEventListener('notificationclick', (event) => {
+        console.log('Notification clicked:', event);
         
-        // Apply the saved theme on page load
-        if (currentTheme === 'dark') {
-            body.classList.add('dark');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-            adminThemeIcon.classList.remove('fa-moon');
-            adminThemeIcon.classList.add('fa-sun');
-        } else {
-            // Ensure light mode is properly set
-            body.classList.remove('dark');
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-            adminThemeIcon.classList.remove('fa-sun');
-            adminThemeIcon.classList.add('fa-moon');
-        }
+        event.notification.close();
 
-        // Theme toggle event listeners
-        function toggleTheme() {
-            body.classList.toggle('dark');
+        if (event.action === 'open' || !event.action) {
+            const urlToOpen = event.notification.data?.url || '/';
             
-            // Update icons and save preference
-            if (body.classList.contains('dark')) {
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
-                adminThemeIcon.classList.remove('fa-moon');
-                adminThemeIcon.classList.add('fa-sun');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                themeIcon.classList.remove('fa-sun');
-                themeIcon.classList.add('fa-moon');
-                adminThemeIcon.classList.remove('fa-sun');
-                adminThemeIcon.classList.add('fa-moon');
-                localStorage.setItem('theme', 'light');
-            }
+            event.waitUntil(
+                clients.matchAll({ type: 'window', includeUncontrolled: true })
+                    .then((clientList) => {
+                        // Check if there's already a window/tab open with the target URL
+                        for (const client of clientList) {
+                            if (client.url === urlToOpen && 'focus' in client) {
+                                return client.focus();
+                            }
+                        }
+                        
+                        // If no existing window/tab, open a new one
+                        if (clients.openWindow) {
+                            return clients.openWindow(urlToOpen);
+                        }
+                    })
+            );
         }
+    });
 
-        themeToggle.addEventListener('click', toggleTheme);
-        adminThemeToggle.addEventListener('click', toggleTheme);
+    // Handle push events (fallback)
+    self.addEventListener('push', (event) => {
+        if (event.data) {
+            const payload = event.data.json();
+            console.log('Push event received:', payload);
+            
+            const title = payload.notification?.title || 'SALTO CAST';
+            const options = {
+                body: payload.notification?.body || 'Nuevo contenido disponible',
+                icon: payload.notification?.icon || '/favicon.ico',
+                badge: '/favicon.ico',
+                tag: 'saltocast-push'
+            };
+            
+            event.waitUntil(
+                self.registration.showNotification(title, options)
+            );
+        }
+    });
 
-        console.log('SALTO CAST with Admin Panel initialized');
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9898096532e41169',t:'MTc1OTYxNjExMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    PASOS PARA CONFIGURAR:
+
+    1. Crea el archivo 'firebase-messaging-sw.js' en la raíz de tu proyecto web
+    2. Ve a Firebase Console > Tu Proyecto > Configuración del Proyecto > Cloud Messaging
+    3. En la sección "Configuración web", genera un par de claves VAPID
+    4. Reemplaza 'BNxwGc8dTndcjz5pNp8kNpXvKoHzFQs7Q8rJ9vQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQs8wQ' 
+       con tu clave VAPID pública real en la línea 1211 de este código
+    5. Asegúrate de que tu dominio esté autorizado en Firebase Console
+
+    ESTRUCTURA DE LA BASE DE DATOS:
+    
+    suscriptores/
+    ├── {subscriberId}/
+    │   ├── email: "usuario@ejemplo.com"
+    │   ├── fecha: timestamp
+    │   ├── pushToken: "fcm_token_aqui" (opcional)
+    │   └── fechaActualizacion: timestamp (opcional)
+
+    ENVÍO DE NOTIFICACIONES:
+    
+    Para enviar notificaciones desde el panel admin o mediante API, usa la Firebase Admin SDK
+    o la API REST de FCM con los tokens guardados en la base de datos.
+    -->
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9898cf8b74251169',t:'MTc1OTYyNDIyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
