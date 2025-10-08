@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAIPURU PLATA - Sistema de Préstamos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-900 font-sans text-gray-100">
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold">💰 JAIPURU PLATA</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="userWelcome" class="hidden text-sm">Bienvenido, <span id="userName"></span></span>
+                    <button id="loginBtn" onclick="showLoginModal()" class="bg-white text-purple-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition">Iniciar Sesión</button>
+                    <button id="registerBtn" onclick="showRegisterModal()" class="border border-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-white hover:text-purple-600 transition">Registrarse</button>
+                    <button id="logoutBtn" onclick="logout()" class="hidden bg-red-500 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition">Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+        
+        <!-- Welcome Section -->
+        <div id="welcomeSection" class="text-center mb-12">
+            <!-- Hero Section -->
+            <div class="hero-gradient rounded-3xl p-12 mb-12 text-white relative overflow-hidden">
+                <div class="relative z-10 text-center">
+                    <h1 class="text-6xl font-bold mb-4 animate-bounce">💰 ¡DINERO RÁPIDO!</h1>
+                    <div class="text-4xl font-bold mb-6">
+                        <span class="text-yellow-300">SOLO 30% DE INTERÉS</span>
+                    </div>
+                    <div class="text-3xl font-bold mb-8 animate-pulse">⚡ APROBACIÓN EN 1 HORA ⚡</div>
+                    <p class="text-xl mb-8 opacity-90">
+                        Obtén hasta <span class="font-bold text-yellow-300">₲50.000.000</span> sin garantías ni fiadores
+                    </p>
+                    <button onclick="showRegisterModal()" class="bg-yellow-400 text-black px-12 py-4 rounded-full text-2xl font-bold hover:bg-yellow-300 transition animate-pulse hover-scale">
+                        ¡SOLICITAR AHORA!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calculadora Rápida -->
+            <div class="bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl p-8 mb-12 text-white">
+                <h3 class="text-3xl font-bold mb-6">🧮 CALCULADORA RÁPIDA</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                    <div class="text-center bg-white bg-opacity-10 rounded-lg p-4">
+                        <p class="text-lg mb-2">Si solicitas</p>
+                        <p class="text-4xl font-bold text-yellow-300">₲1.000.000</p>
+                        <p class="text-sm opacity-80">Monto base</p>
+                    </div>
+                    <div class="text-center bg-white bg-opacity-10 rounded-lg p-4">
+                        <p class="text-lg mb-2">Pagas semanalmente</p>
+                        <p class="text-4xl font-bold text-green-300">₲650.000</p>
+                        <p class="text-sm opacity-80">Por 2 semanas</p>
+                    </div>
+                    <div class="text-center bg-white bg-opacity-10 rounded-lg p-4">
+                        <p class="text-lg mb-2">Total a devolver</p>
+                        <p class="text-4xl font-bold text-orange-300">₲1.300.000</p>
+                        <p class="text-sm opacity-80">Solo 30% de interés</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beneficios -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="benefit-card p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold mb-2 text-gradient">SÚPER RÁPIDO</h3>
+                    <p class="text-sm text-gray-300">Aprobación en 1 hora máximo</p>
+                </div>
+                <div class="benefit-card p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-4">🚫</div>
+                    <h3 class="text-xl font-bold mb-2 text-gradient">SIN GARANTÍAS</h3>
+                    <p class="text-sm text-gray-300">No necesitas fiadores ni avales</p>
+                </div>
+                <div class="benefit-card p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-4">💰</div>
+                    <h3 class="text-xl font-bold mb-2 text-gradient">HASTA ₲50M</h3>
+                    <p class="text-sm text-gray-300">Montos altos disponibles</p>
+                </div>
+                <div class="benefit-card p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="text-xl font-bold mb-2 text-gradient">100% DIGITAL</h3>
+                    <p class="text-sm text-gray-300">Todo desde tu celular</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div class="glass-effect p-8 rounded-xl max-w-md w-full animate-fade-in">
+                <h3 class="text-2xl font-bold mb-6 text-center text-white">Iniciar Sesión</h3>
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="loginEmail" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Contraseña</label>
+                        <input type="password" id="loginPassword" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                    </div>
+                    <button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg font-medium hover:opacity-90 transition">Iniciar Sesión</button>
+                </form>
+                <div class="mt-4 text-center">
+                    <button id="switchToRegister" class="text-blue-400 hover:text-blue-300 text-sm">¿No tienes cuenta? Regístrate aquí</button>
+                </div>
+                <button id="closeLoginModal" class="mt-4 w-full text-gray-400 hover:text-gray-200">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Register Modal -->
+        <div id="registerModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div class="glass-effect p-8 rounded-xl max-w-md w-full animate-fade-in">
+                <h3 class="text-2xl font-bold mb-6 text-center text-white">Registrarse</h3>
+                <form id="registerForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Nombre Completo</label>
+                        <input type="text" id="registerName" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="registerEmail" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Teléfono</label>
+                        <input type="tel" id="registerPhone" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" placeholder="Ej: 0981123456" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Documento de Identidad</label>
+                        <input type="text" id="registerDocument" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" placeholder="Ej: 1234567" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Contraseña</label>
+                        <input type="password" id="registerPassword" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                    </div>
+                    <button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg font-medium hover:opacity-90 transition">Registrarse</button>
+                </form>
+                <div class="mt-4 text-center">
+                    <button id="switchToLogin" class="text-blue-400 hover:text-blue-300 text-sm">¿Ya tienes cuenta? Inicia sesión aquí</button>
+                </div>
+                <button id="closeRegisterModal" class="mt-2 w-full text-gray-400 hover:text-gray-200">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- User Dashboard -->
+        <div id="userDashboard" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Loan Application -->
+                <div class="lg:col-span-2">
+                    <div class="dark-card rounded-xl card-shadow p-6 mb-6">
+                        <h3 class="text-2xl font-bold mb-6 text-white">Solicitar Préstamo</h3>
+                        <form id="loanForm">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-bold mb-2">Monto Solicitado</label>
+                                    <input type="number" id="loanAmount" min="100000" max="50000000" step="100000" value="1000000" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-bold mb-2">Plazo (semanas)</label>
+                                    <select id="loanTerm" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                                        <option value="1">1 semana</option>
+                                        <option value="2" selected>2 semanas</option>
+                                        <option value="3">3 semanas</option>
+                                        <option value="4">4 semanas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Loan Calculator -->
+                            <div class="bg-slate-800 p-4 rounded-lg mb-4 border border-slate-600">
+                                <h4 class="text-base font-semibold mb-3 text-white">Calculadora de Préstamo</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                                    <div class="bg-slate-700 p-3 rounded">
+                                        <p class="text-sm text-gray-400">Cuota Semanal</p>
+                                        <p id="weeklyPayment" class="text-xl font-bold text-blue-400">₲0</p>
+                                    </div>
+                                    <div class="bg-slate-700 p-3 rounded">
+                                        <p class="text-sm text-gray-400">Total a Pagar</p>
+                                        <p id="totalPayment" class="text-xl font-bold text-blue-400">₲0</p>
+                                    </div>
+                                    <div class="bg-slate-700 p-3 rounded">
+                                        <p class="text-sm text-gray-400">Intereses (30%)</p>
+                                        <p id="totalInterest" class="text-xl font-bold text-blue-400">₲0</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-gray-300 text-sm font-bold mb-2">Propósito del Préstamo</label>
+                                <select id="loanPurpose" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white" required>
+                                    <option value="">Seleccionar propósito</option>
+                                    <option value="personal">Gastos Personales</option>
+                                    <option value="business">Negocio</option>
+                                    <option value="education">Educación</option>
+                                    <option value="medical">Gastos Médicos</option>
+                                    <option value="home">Mejoras del Hogar</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="acceptTerms" class="mr-2" required>
+                                    <span class="text-sm text-gray-300">Acepto los términos y condiciones</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="w-full gradient-bg text-white py-3 rounded-lg font-medium hover:opacity-90 transition">Solicitar Préstamo</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- User Profile -->
+                <div>
+                    <div class="dark-card rounded-xl card-shadow p-6 mb-6">
+                        <h3 class="text-xl font-bold mb-4 text-white">Mi Perfil</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-sm text-gray-400">Nombre</p>
+                                <p id="profileName" class="font-medium text-gray-200">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Email</p>
+                                <p id="profileEmail" class="font-medium text-gray-200">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Estado</p>
+                                <span class="bg-green-600 text-green-100 px-2 py-1 rounded-full text-xs font-medium">Activo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dark-card rounded-xl card-shadow p-6">
+                        <h3 class="text-xl font-bold mb-4 text-white">Resumen Financiero</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Préstamos Activos</span>
+                                <span id="activeLoans" class="font-bold text-white">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Deuda Total</span>
+                                <span id="totalDebt" class="font-bold text-white">₲0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Próximo Pago</span>
+                                <span id="nextPayment" class="font-bold text-white">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loan History -->
+            <div class="mt-8">
+                <div class="dark-card rounded-xl card-shadow p-6">
+                    <h3 class="text-2xl font-bold mb-6 text-white">Historial de Préstamos</h3>
+                    <div id="loanHistory" class="space-y-4">
+                        <p class="text-gray-400 text-center py-8">No tienes préstamos registrados aún</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-white mb-4">Panel de Administración</h2>
+                
+                <!-- Admin Stats -->
+                <div class="grid md:grid-cols-4 gap-6 mb-8">
+                    <div class="dark-card p-6 rounded-xl card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-400">Solicitudes Pendientes</p>
+                                <p id="pendingLoans" class="text-2xl font-bold text-orange-400">0</p>
+                            </div>
+                            <div class="text-3xl">⏳</div>
+                        </div>
+                    </div>
+                    <div class="dark-card p-6 rounded-xl card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-400">Préstamos Activos</p>
+                                <p id="adminActiveLoans" class="text-2xl font-bold text-green-400">0</p>
+                            </div>
+                            <div class="text-3xl">✅</div>
+                        </div>
+                    </div>
+                    <div class="dark-card p-6 rounded-xl card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-400">Total Usuarios</p>
+                                <p id="totalUsers" class="text-2xl font-bold text-blue-400">0</p>
+                            </div>
+                            <div class="text-3xl">👥</div>
+                        </div>
+                    </div>
+                    <div class="dark-card p-6 rounded-xl card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-400">Ingresos del Mes</p>
+                                <p id="monthlyRevenue" class="text-2xl font-bold text-purple-400">₲0</p>
+                            </div>
+                            <div class="text-3xl">💰</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Loans -->
+                <div class="dark-card rounded-xl card-shadow p-6">
+                    <h3 class="text-xl font-bold text-white mb-6">⏳ Solicitudes Pendientes</h3>
+                    <div id="pendingLoansList" class="space-y-4">
+                        <div class="text-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                            <p class="text-gray-400">Cargando solicitudes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Modal -->
+        <div id="notificationModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div class="glass-effect p-8 rounded-xl max-w-md w-full animate-fade-in">
+                <div class="text-center">
+                    <div id="notificationIcon" class="text-4xl mb-4">✅</div>
+                    <h3 id="notificationTitle" class="text-xl font-bold mb-4 text-white">Título</h3>
+                    <p id="notificationMessage" class="text-gray-300 mb-6">Mensaje</p>
+                    <button id="closeNotificationModal" class="w-full py-2 rounded-lg font-medium transition">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, push, update, remove, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDY82D-ydn6cck4RVPhe-mu4rTCpO8j9HU",
+            authDomain: "jaipuru-plata.firebaseapp.com",
+            databaseURL: "https://jaipuru-plata-default-rtdb.firebaseio.com/",
+            projectId: "jaipuru-plata",
+            storageBucket: "jaipuru-plata.firebasestorage.app",
+            messagingSenderId: "534736415199",
+            appId: "1:534736415199:web:e52102ba00313d0c7e3c6a",
+            measurementId: "G-DLDR4P29MH"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        // Make Firebase functions globally available
+        window.firebaseDB = {
+            database,
+            ref,
+            set,
+            get,
+            push,
+            update,
+            remove,
+            onValue
+        };
+        
+        // Initialize app after Firebase is loaded
+        window.initializeApp();
+    </script>
+    
+    <script src="app.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98b5e98b650570c6',t:'MTc1OTkyOTM4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
